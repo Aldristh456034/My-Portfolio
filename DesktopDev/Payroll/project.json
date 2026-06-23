@@ -1,0 +1,7 @@
+{
+    "title": "Payroll System",
+    "shortDesc": "Admin system for reports, accounts, and salary management.",
+    "longDesc": "Admin system for reports, accounts, and salary management. Built with C# and SQL.\n\nFeatures:\n• Employee database management\n• Salary computation with deductions\n• Generate payslips (PDF)\n• Attendance and leave tracking\n• Role-based access for HR and employees\n• Comprehensive reports (monthly, yearly)\n• Tax computation support",
+    "tech": ["C#", "SQL"],
+    "github": "https://github.com/aldristh456034/payroll-system"
+}

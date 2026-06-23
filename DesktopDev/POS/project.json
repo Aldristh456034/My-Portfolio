@@ -1,0 +1,7 @@
+{
+    "title": "Point of Sale & Inventory",
+    "shortDesc": "Cashier & admin interface with inventory, pricing, and reports.",
+    "longDesc": "Cashier & admin interface with inventory, pricing, and reports. Built with Java 16, UCanAccess, and Microsoft Access.\n\nFeatures:\n• Cashier mode: fast checkout with barcode support\n• Admin dashboard: inventory overview\n• Product management (add, update, delete)\n• Real-time stock tracking\n• Sales reports and analytics\n• User account creation for staff\n• Low stock alerts",
+    "tech": ["Java", "UCanAccess", "MS Access"],
+    "github": "https://github.com/aldristh456034/pos-inventory"
+}

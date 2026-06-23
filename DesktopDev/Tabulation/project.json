@@ -1,0 +1,7 @@
+{
+    "title": "Tabulation System",
+    "shortDesc": "Fast-paced pageantry scoring with import/export of data.",
+    "longDesc": "Fast-paced pageantry scoring with import/export of data. Built with C# and Excel integration.\n\nUsed in a school pageantry event at Camarines Sur.\n\nFeatures:\n• Real-time scoring for judges\n• Automatic calculation and ranking\n• Import/export of criteria and scores via Excel\n• Live leaderboard display\n• Tie-breaking logic\n• Print certificates and results",
+    "tech": ["C#", "Excel"],
+    "github": "https://github.com/aldristh456034/tabulation-system"
+}
