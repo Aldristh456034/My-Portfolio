@@ -1,0 +1,7 @@
+{
+    "title": "Karting Game",
+    "shortDesc": "A typical kart racing game built with Unity and C#.",
+    "longDesc": "A typical kart racing game built with Unity and C#.\n\nGame Mechanics:\n• Multiple tracks with obstacles\n• Power-ups (speed boost, shield)\n• AI opponents with varying difficulty\n• Time trial and race modes\n• Customizable kart colors\n• Leaderboard with best lap times",
+    "tech": ["Unity", "C#"],
+    "github": "https://github.com/aldristh456034/karting-game"
+}
