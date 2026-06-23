@@ -53,6 +53,10 @@
             0% { opacity: 0; transform: translateY(28px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
         .animate-in {
             animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
             opacity: 0;
@@ -303,6 +307,72 @@
             }
             .profile-text h1 { font-size: 2.2rem; }
             .nav-links { gap: 14px; font-size: 0.85rem; flex-wrap: wrap; }
+        }
+
+        /* ===== SKELETON LOADING WIREFRAME ===== */
+        .skeleton-card {
+            padding: 24px 22px 22px;
+            border-radius: 28px;
+            background: rgba(22, 28, 36, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            animation: fadeSlideUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        .skeleton-card .skeleton-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 18px;
+            margin-bottom: 16px;
+            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        .skeleton-card .skeleton-title {
+            height: 24px;
+            width: 70%;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        .skeleton-card .skeleton-desc {
+            height: 16px;
+            width: 90%;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        .skeleton-card .skeleton-desc.short {
+            width: 60%;
+        }
+        .skeleton-card .skeleton-meta {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .skeleton-card .skeleton-tech {
+            height: 28px;
+            width: 60px;
+            border-radius: 40px;
+            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        .skeleton-card .skeleton-tech.wide {
+            width: 80px;
+        }
+
+        @keyframes fadeSlideUp {
+            0% { opacity: 0; transform: translateY(28px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* ----- MODAL ----- */
@@ -566,14 +636,6 @@
             border-top: 1px solid #1f2b39;
             margin-top: 20px;
         }
-
-        /* Loading indicator */
-        .loading-text {
-            color: #829fc9;
-            text-align: center;
-            padding: 40px 0;
-            font-size: 1.1rem;
-        }
     </style>
 </head>
 <body>
@@ -615,7 +677,7 @@
             <span class="material-icons-round">desktop_windows</span> Desktop Development
         </div>
         <div class="project-grid animate-in delay-1" id="desktop-grid">
-            <div class="loading-text">Loading projects...</div>
+            <!-- Skeletons will be rendered by JavaScript -->
         </div>
 
         <!-- Web Development -->
@@ -623,7 +685,7 @@
             <span class="material-icons-round">web</span> Web Development
         </div>
         <div class="project-grid animate-in delay-2" id="web-grid">
-            <div class="loading-text">Loading projects...</div>
+            <!-- Skeletons will be rendered by JavaScript -->
         </div>
 
         <!-- Game Development -->
@@ -631,7 +693,7 @@
             <span class="material-icons-round">sports_esports</span> Game Development
         </div>
         <div class="project-grid animate-in delay-2" id="game-grid">
-            <div class="loading-text">Loading projects...</div>
+            <!-- Skeletons will be rendered by JavaScript -->
         </div>
 
         <!-- Android Development -->
@@ -639,7 +701,7 @@
             <span class="material-icons-round">android</span> Android Development
         </div>
         <div class="project-grid animate-in delay-3" id="android-grid">
-            <div class="loading-text">Loading projects...</div>
+            <!-- Skeletons will be rendered by JavaScript -->
         </div>
 
         <!-- Graphics Design -->
@@ -647,7 +709,7 @@
             <span class="material-icons-round">brush</span> Graphics Design
         </div>
         <div class="project-grid animate-in delay-3" id="graphics-grid">
-            <div class="loading-text">Loading projects...</div>
+            <!-- Skeletons will be rendered by JavaScript -->
         </div>
 
         <!-- CONTACT -->
@@ -709,7 +771,6 @@
         (function() {
             // ================================================================
             // PROJECT CONFIGURATION
-            // IMPORTANT: Update these folder paths to match your actual structure!
             // Each project folder should contain a project.json file
             // ================================================================
             const projectFolders = [
@@ -734,6 +795,46 @@
             let projectsData = [];
             let loadedCount = 0;
             const totalProjects = projectFolders.length;
+
+            // ----- Helper: Create skeleton card -----
+            function createSkeletonCard() {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'skeleton-card';
+                skeleton.innerHTML = `
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-title"></div>
+                    <div class="skeleton-desc"></div>
+                    <div class="skeleton-desc short"></div>
+                    <div class="skeleton-meta">
+                        <div class="skeleton-tech"></div>
+                        <div class="skeleton-tech wide"></div>
+                        <div class="skeleton-tech"></div>
+                    </div>
+                `;
+                return skeleton;
+            }
+
+            // ----- Render skeleton cards initially -----
+            function renderSkeletons() {
+                const categoryGrids = ['desktop-grid', 'web-grid', 'game-grid', 'android-grid', 'graphics-grid'];
+                const categoryCounts = {
+                    'desktop-grid': 5,
+                    'web-grid': 1,
+                    'game-grid': 1,
+                    'android-grid': 1,
+                    'graphics-grid': 3
+                };
+
+                categoryGrids.forEach(gridId => {
+                    const grid = document.getElementById(gridId);
+                    if (!grid) return;
+                    grid.innerHTML = '';
+                    const count = categoryCounts[gridId] || 3;
+                    for (let i = 0; i < count; i++) {
+                        grid.appendChild(createSkeletonCard());
+                    }
+                });
+            }
 
             // ----- Helper: Fetch JSON file -----
             function fetchJSON(url) {
@@ -781,7 +882,6 @@
                         checkImage(index + 1);
                     };
                     img.src = imgPath;
-                    // Add small timeout to prevent hanging
                     setTimeout(() => {
                         if (!found && index > 1) {
                             callback(images);
@@ -794,12 +894,14 @@
             // ----- Load all projects -----
             console.log('Loading projects...');
 
+            // Render skeletons immediately
+            renderSkeletons();
+
             projectFolders.forEach((config, index) => {
                 const jsonUrl = config.folder + 'project.json';
                 console.log(`Attempting to load: ${jsonUrl}`);
 
                 fetchJSON(jsonUrl).then(jsonData => {
-                    // Get images
                     getImagesFromFolder(config.folder, (images) => {
                         if (jsonData) {
                             console.log(`✅ Loaded: ${jsonData.title || config.folder}`);
@@ -814,15 +916,14 @@
                                 images: images
                             };
                         } else {
-                            // Fallback if JSON not found
                             const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
                             console.warn(`⚠️ No JSON found for: ${config.folder}`);
                             projectsData[index] = {
                                 folder: config.folder,
                                 category: config.category,
                                 title: folderName,
-                                shortDesc: '⚠️ project.json not found. Please create it in this folder.',
-                                longDesc: '⚠️ project.json not found. Please create it in this folder with:\n\n{\n  "title": "Your Project",\n  "shortDesc": "Short description",\n  "longDesc": "Long description with \\n for line breaks",\n  "tech": ["Tech1", "Tech2"],\n  "github": "https://github.com/your-repo"\n}',
+                                shortDesc: '⚠️ project.json not found. Please create it.',
+                                longDesc: '⚠️ project.json not found. Please create it in this folder.',
                                 tech: ['Unknown'],
                                 github: '#',
                                 images: images
@@ -849,8 +950,8 @@
                                 folder: config.folder,
                                 category: config.category,
                                 title: folderName,
-                                shortDesc: '⚠️ Loading timeout. Please check your folder structure.',
-                                longDesc: '⚠️ Loading timeout. The script could not find project.json in this folder.',
+                                shortDesc: '⚠️ Loading timeout.',
+                                longDesc: '⚠️ Loading timeout. Could not load project data.',
                                 tech: ['Unknown'],
                                 github: '#',
                                 images: []
@@ -1062,11 +1163,9 @@
                 if (e.key === 'ArrowLeft') prevImage();
             });
 
-            // Re-run card preview updates
             setTimeout(updateCardPreviews, 3000);
             setTimeout(updateCardPreviews, 6000);
 
-            // Log to help debug
             console.log('Portfolio loaded. Check console for any errors.');
             console.log('Project folders configured:', projectFolders.length);
 
