@@ -9,53 +9,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css" />
-    <style>
-        /* Additional styles for retry button */
-        .retry-btn {
-            margin-top: 12px;
-            padding: 6px 16px;
-            background: #2a3d55;
-            border: 1px solid #4a6a8a;
-            border-radius: 20px;
-            color: #b8d0f0;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-            align-self: center;
-        }
-        .retry-btn:hover {
-            background: #3a5a7a;
-            border-color: #6a8aaa;
-            color: #ffffff;
-        }
-        .error-card {
-            padding: 24px 22px 22px;
-            border-radius: 28px;
-            background: rgba(40, 20, 20, 0.4);
-            border: 1px solid rgba(255, 80, 80, 0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-            text-align: center;
-            color: #cc8899;
-        }
-        .error-card .error-icon {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            opacity: 0.6;
-        }
-        .error-card .error-text {
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-        .error-card .error-sub {
-            font-size: 0.75rem;
-            color: #886677;
-        }
-    </style>
 </head>
 <body>
 
@@ -205,10 +158,6 @@
             let loadedCount = 0;
             const totalProjects = projectFolders.length;
 
-            // Track retry attempts per project
-            const retryAttempts = {};
-            const MAX_RETRIES = 5;
-
             // ----- Helper: Create skeleton card -----
             function createSkeletonCard() {
                 const skeleton = document.createElement('div');
@@ -225,28 +174,6 @@
                     </div>
                 `;
                 return skeleton;
-            }
-
-            // ----- Create error card with retry button -----
-            function createErrorCard(projectIndex, folder, errorMessage) {
-                const card = document.createElement('div');
-                card.className = 'error-card';
-                card.dataset.index = projectIndex;
-                card.innerHTML = `
-                    <div class="error-icon">⚠️</div>
-                    <div class="error-text">${errorMessage || 'Failed to load project'}</div>
-                    <div class="error-sub">Click retry to try again</div>
-                    <button class="retry-btn" data-index="${projectIndex}">🔄 Retry</button>
-                `;
-                
-                const retryBtn = card.querySelector('.retry-btn');
-                retryBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const idx = parseInt(this.dataset.index);
-                    retryProject(idx);
-                });
-                
-                return card;
             }
 
             // ----- Render skeleton cards initially -----
@@ -307,18 +234,11 @@
                 let checked = 0;
                 const maxAttempts = 50;
                 let timeoutId = null;
-                let isComplete = false;
-
-                function complete(result) {
-                    if (isComplete) return;
-                    isComplete = true;
-                    if (timeoutId) clearTimeout(timeoutId);
-                    callback(result);
-                }
 
                 function checkImage(index) {
                     if (index > maxAttempts) {
-                        complete(images);
+                        if (timeoutId) clearTimeout(timeoutId);
+                        callback(images);
                         return;
                     }
                     const imgPath = folder + 'preview' + index + '.png';
@@ -327,11 +247,13 @@
                     const imageTimeout = setTimeout(() => {
                         img.src = '';
                         if (found && index > 1) {
-                            complete(images);
+                            if (timeoutId) clearTimeout(timeoutId);
+                            callback(images);
                             return;
                         }
                         if (!found && index > 5) {
-                            complete(images);
+                            if (timeoutId) clearTimeout(timeoutId);
+                            callback(images);
                             return;
                         }
                         checkImage(index + 1);
@@ -346,11 +268,13 @@
                     img.onerror = function() {
                         clearTimeout(imageTimeout);
                         if (found && index > 1) {
-                            complete(images);
+                            if (timeoutId) clearTimeout(timeoutId);
+                            callback(images);
                             return;
                         }
                         if (!found && index > 5) {
-                            complete(images);
+                            if (timeoutId) clearTimeout(timeoutId);
+                            callback(images);
                             return;
                         }
                         checkImage(index + 1);
@@ -360,61 +284,21 @@
                 checkImage(1);
             }
 
-            // ----- Retry a specific project -----
-            function retryProject(index) {
-                const config = projectFolders[index];
-                if (!config) return;
-                
-                // Increment retry count
-                retryAttempts[index] = (retryAttempts[index] || 0) + 1;
-                
-                if (retryAttempts[index] > MAX_RETRIES) {
-                    console.warn(`Max retries reached for ${config.folder}`);
-                    // Show permanent error
-                    const grid = document.getElementById(config.category + '-grid');
-                    if (grid) {
-                        const existingCard = grid.querySelector(`[data-index="${index}"]`);
-                        if (existingCard) {
-                            existingCard.innerHTML = `
-                                <div class="error-icon">❌</div>
-                                <div class="error-text">Failed to load after ${MAX_RETRIES} attempts</div>
-                                <div class="error-sub">Please check your folder structure and refresh the page</div>
-                            `;
-                        }
-                    }
-                    return;
-                }
+            // ----- Load all projects -----
+            console.log('Loading projects...');
 
-                console.log(`🔄 Retrying ${config.folder} (attempt ${retryAttempts[index]})...`);
-                
-                // Show loading skeleton again
-                const grid = document.getElementById(config.category + '-grid');
-                if (grid) {
-                    const existingCard = grid.querySelector(`[data-index="${index}"]`);
-                    if (existingCard) {
-                        const skeleton = createSkeletonCard();
-                        skeleton.dataset.index = index;
-                        existingCard.replaceWith(skeleton);
-                    }
-                }
+            // Render skeletons immediately
+            renderSkeletons();
 
-                // Attempt to load the project again
-                loadSingleProject(index);
-            }
-
-            // ----- Load a single project -----
-            function loadSingleProject(index) {
-                const config = projectFolders[index];
-                if (!config) return;
-
+            projectFolders.forEach((config, index) => {
                 const jsonUrl = config.folder + 'project.json';
+                console.log(`Attempting to load: ${jsonUrl}`);
 
-                fetchJSONWithRetry(jsonUrl, 2, 800).then(jsonData => {
+                fetchJSONWithRetry(jsonUrl, 3, 1000).then(jsonData => {
                     getImagesFromFolder(config.folder, (images) => {
-                        let projectData;
                         if (jsonData) {
                             console.log(`✅ Loaded: ${jsonData.title || config.folder}`);
-                            projectData = {
+                            projectsData[index] = {
                                 folder: config.folder,
                                 category: config.category,
                                 title: jsonData.title || 'Untitled Project',
@@ -427,7 +311,7 @@
                         } else {
                             const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
                             console.warn(`⚠️ No JSON found for: ${config.folder}`);
-                            projectData = {
+                            projectsData[index] = {
                                 folder: config.folder,
                                 category: config.category,
                                 title: folderName,
@@ -438,45 +322,69 @@
                                 images: images
                             };
                         }
-                        
-                        // Store the data
-                        projectsData[index] = projectData;
-                        
-                        // Replace skeleton with actual card
-                        const grid = document.getElementById(config.category + '-grid');
-                        if (grid) {
-                            const skeletonCard = grid.querySelector(`[data-index="${index}"]`);
-                            if (skeletonCard) {
-                                // If it's an error card or skeleton, replace it
-                                const newCard = createProjectCard(projectData, index);
-                                skeletonCard.replaceWith(newCard);
-                                updateCardPreviews();
-                            }
-                        }
-                        
-                        // Update loaded count
                         loadedCount++;
+                        console.log(`Progress: ${loadedCount}/${totalProjects}`);
                         if (loadedCount === totalProjects) {
                             console.log('✅ All projects loaded!');
+                            renderAllProjects();
                         }
                     });
                 });
-            }
-
-            // ----- Load all projects with individual retry -----
-            console.log('Loading projects...');
-
-            // Render skeletons immediately
-            renderSkeletons();
-
-            projectFolders.forEach((config, index) => {
-                retryAttempts[index] = 0;
-                loadSingleProject(index);
             });
 
-            // ----- Render projects into grids (for initial load) -----
+            // Fallback timeout - extended to 15 seconds for projects with many images
+            setTimeout(() => {
+                if (loadedCount < totalProjects) {
+                    console.warn('⚠️ Timeout - some projects may not have loaded');
+                    projectFolders.forEach((config, index) => {
+                        if (!projectsData[index]) {
+                            const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
+                            projectsData[index] = {
+                                folder: config.folder,
+                                category: config.category,
+                                title: folderName,
+                                shortDesc: '⚠️ Loading timeout.',
+                                longDesc: '⚠️ Loading timeout.',
+                                tech: ['Unknown'],
+                                github: '#',
+                                images: []
+                            };
+                            loadedCount++;
+                            if (loadedCount === totalProjects) {
+                                renderAllProjects();
+                            }
+                        }
+                    });
+                }
+            }, 15000);
+
+            // ----- Render projects into grids -----
             function renderAllProjects() {
-                // This is now handled per-card, but keep as fallback
+                const categories = {
+                    desktop: 'desktop-grid',
+                    web: 'web-grid',
+                    game: 'game-grid',
+                    android: 'android-grid',
+                    graphics: 'graphics-grid'
+                };
+
+                Object.keys(categories).forEach(cat => {
+                    const grid = document.getElementById(categories[cat]);
+                    if (!grid) return;
+                    grid.innerHTML = '';
+                    
+                    const projects = projectsData.filter(p => p.category === cat);
+                    if (projects.length === 0) {
+                        grid.innerHTML = '<div class="loading-text">No projects in this category.</div>';
+                        return;
+                    }
+                    projects.forEach((project, idx) => {
+                        const card = createProjectCard(project, projectsData.indexOf(project));
+                        grid.appendChild(card);
+                    });
+                });
+
+                updateCardPreviews();
             }
 
             // ----- Create a project card element -----
@@ -653,9 +561,6 @@
 
             console.log('Portfolio loaded. Check console for any errors.');
             console.log('Project folders configured:', projectFolders.length);
-
-            // Global retry function exposed for debugging
-            window.retryProject = retryProject;
 
         })();
     </script>
