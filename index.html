@@ -53,10 +53,6 @@
             0% { opacity: 0; transform: translateY(28px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
         .animate-in {
             animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
             opacity: 0;
@@ -309,72 +305,6 @@
             .nav-links { gap: 14px; font-size: 0.85rem; flex-wrap: wrap; }
         }
 
-        /* ===== SKELETON LOADING WIREFRAME ===== */
-        .skeleton-card {
-            padding: 24px 22px 22px;
-            border-radius: 28px;
-            background: rgba(22, 28, 36, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            display: flex;
-            flex-direction: column;
-            animation: fadeSlideUp 0.6s ease forwards;
-            opacity: 0;
-        }
-        .skeleton-card .skeleton-img {
-            width: 100%;
-            aspect-ratio: 16/9;
-            border-radius: 18px;
-            margin-bottom: 16px;
-            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-        .skeleton-card .skeleton-title {
-            height: 24px;
-            width: 70%;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-        .skeleton-card .skeleton-desc {
-            height: 16px;
-            width: 90%;
-            border-radius: 4px;
-            margin-bottom: 6px;
-            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-        .skeleton-card .skeleton-desc.short {
-            width: 60%;
-        }
-        .skeleton-card .skeleton-meta {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255,255,255,0.04);
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .skeleton-card .skeleton-tech {
-            height: 28px;
-            width: 60px;
-            border-radius: 40px;
-            background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-        .skeleton-card .skeleton-tech.wide {
-            width: 80px;
-        }
-
-        @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(28px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
         /* ----- MODAL ----- */
         .modal-overlay {
             position: fixed;
@@ -561,7 +491,7 @@
             border-color: #5b84c7;
         }
 
-        /* ----- CONTACT ----- */
+        /* ----- CONTACT - FIXED SPACING ----- */
         .contact-section {
             margin: 56px 0 40px;
             padding: 32px 32px 28px;
@@ -663,7 +593,7 @@
             <div class="profile-text">
                 <h1>Aldrich Trinidad</h1>
                 <div class="badge">✦ IT · Software Developer</div>
-                <p>Software Developer. I build immersive digital experiences — from microservices to mobile, with a passion for clean code and elegant design.</p>
+                <p>Full‑stack architect & creative problem solver. I build immersive digital experiences — from microservices to mobile, with a passion for clean code and elegant design.</p>
             </div>
         </section>
 
@@ -676,43 +606,161 @@
         <div class="sub-section-title animate-in delay-1">
             <span class="material-icons-round">desktop_windows</span> Desktop Development
         </div>
-        <div class="project-grid animate-in delay-1" id="desktop-grid">
-            <!-- Skeletons will be rendered by JavaScript -->
+        <div class="project-grid animate-in delay-1">
+            <div class="project-card card" data-project="0">
+                <div class="preview-img"><i class="material-icons-round">grade</i> <span>C# · MongoDB</span></div>
+                <h3>Grading System</h3>
+                <p>Enables creation of subjects, students, and grading per student.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">C#</span>
+                        <span class="tech">MongoDB</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="1">
+                <div class="preview-img"><i class="material-icons-round">account_balance</i> <span>C# · SQLServer</span></div>
+                <h3>Banking System</h3>
+                <p>Admin & user software with OTP, facial recognition, multi-language, and account management.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">C#</span>
+                        <span class="tech">SQLServer</span>
+                        <span class="tech">C++</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="2">
+                <div class="preview-img"><i class="material-icons-round">shopping_cart</i> <span>Java · Access</span></div>
+                <h3>Point of Sale & Inventory</h3>
+                <p>Cashier & admin interface with inventory, pricing, and reports.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Java</span>
+                        <span class="tech">UCanAccess</span>
+                        <span class="tech">MS Access</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="3">
+                <div class="preview-img"><i class="material-icons-round">bar_chart</i> <span>C# · Excel</span></div>
+                <h3>Tabulation System</h3>
+                <p>Fast-paced pageantry scoring with import/export of data.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">C#</span>
+                        <span class="tech">Excel</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="4">
+                <div class="preview-img"><i class="material-icons-round">payments</i> <span>C# · SQL</span></div>
+                <h3>Payroll System</h3>
+                <p>Admin system for reports, accounts, and salary management.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">C#</span>
+                        <span class="tech">SQL</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Web Development -->
         <div class="sub-section-title animate-in delay-2">
             <span class="material-icons-round">web</span> Web Development
         </div>
-        <div class="project-grid animate-in delay-2" id="web-grid">
-            <!-- Skeletons will be rendered by JavaScript -->
+        <div class="project-grid animate-in delay-2">
+            <div class="project-card card" data-project="5">
+                <div class="preview-img"><i class="material-icons-round">event</i> <span>HTML · Python</span></div>
+                <h3>Class Scheduling System</h3>
+                <p>Room allocation & conflict detection for instructors and classrooms. Includes printing.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">HTML</span>
+                        <span class="tech">JavaScript</span>
+                        <span class="tech">Bootstrap</span>
+                        <span class="tech">Python</span>
+                        <span class="tech">SQL</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Game Development -->
         <div class="sub-section-title animate-in delay-2">
             <span class="material-icons-round">sports_esports</span> Game Development
         </div>
-        <div class="project-grid animate-in delay-2" id="game-grid">
-            <!-- Skeletons will be rendered by JavaScript -->
+        <div class="project-grid animate-in delay-2">
+            <div class="project-card card" data-project="6">
+                <div class="preview-img"><i class="material-icons-round">race</i> <span>Unity · C#</span></div>
+                <h3>Karting Game</h3>
+                <p>A typical kart racing game built with Unity and C#.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Unity</span>
+                        <span class="tech">C#</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Android Development -->
         <div class="sub-section-title animate-in delay-3">
             <span class="material-icons-round">android</span> Android Development
         </div>
-        <div class="project-grid animate-in delay-3" id="android-grid">
-            <!-- Skeletons will be rendered by JavaScript -->
+        <div class="project-grid animate-in delay-3">
+            <div class="project-card card" data-project="7">
+                <div class="preview-img"><i class="material-icons-round">games</i> <span>Java · Android</span></div>
+                <h3>Guess the Gibberish</h3>
+                <p>Guess IT-related words from invented gibberish across multiple difficulty levels.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Java</span>
+                        <span class="tech">Android Studio</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Graphics Design -->
         <div class="sub-section-title animate-in delay-3">
             <span class="material-icons-round">brush</span> Graphics Design
         </div>
-        <div class="project-grid animate-in delay-3" id="graphics-grid">
-            <!-- Skeletons will be rendered by JavaScript -->
+        <div class="project-grid animate-in delay-3">
+            <div class="project-card card" data-project="8">
+                <div class="preview-img"><i class="material-icons-round">emoji_events</i> <span>Illustrator</span></div>
+                <h3>Barangay Malabago Logo</h3>
+                <p>Contest-winning logo for Barangay Malabago, Mangaldan.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Adobe Illustrator</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="9">
+                <div class="preview-img"><i class="material-icons-round">school</i> <span>Illustrator</span></div>
+                <h3>Student Council Logo</h3>
+                <p>Official renewed logo for the College Student Council.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Adobe Illustrator</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card card" data-project="10">
+                <div class="preview-img"><i class="material-icons-round">shield</i> <span>Illustrator</span></div>
+                <h3>Arise Guild Logo</h3>
+                <p>Guild logo for a mobile gaming community.</p>
+                <div class="meta">
+                    <div class="tech-wrapper">
+                        <span class="tech">Adobe Illustrator</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- CONTACT -->
+        <!-- CONTACT - FIXED GITHUB LINK SPACING -->
         <div class="contact-section animate-in delay-4" id="contact">
             <div class="info">
                 <a href="mailto:trinidadaldrich328@gmail.com">
@@ -756,7 +804,7 @@
                     <button id="modalNext">Next <span class="material-icons-round">chevron_right</span></button>
                 </div>
                 <div class="modal-desc" id="modalDesc">
-                    <strong>Description:</strong> Loading...
+                    <strong>Description:</strong> Additional details about the project.
                 </div>
                 <div class="modal-footer">
                     <a href="#" id="modalGitHubLink" target="_blank">
@@ -769,89 +817,63 @@
 
     <script>
         (function() {
-            // ================================================================
-            // PROJECT CONFIGURATION
-            // Each project folder should contain a project.json file
-            // ================================================================
-            const projectFolders = [
-                // Desktop Development
-                { folder: 'DesktopDev/GradingSystem/', category: 'desktop' },
-                { folder: 'DesktopDev/BankingSystem/', category: 'desktop' },
-                { folder: 'DesktopDev/POS/', category: 'desktop' },
-                { folder: 'DesktopDev/Tabulation/', category: 'desktop' },
-                { folder: 'DesktopDev/Payroll/', category: 'desktop' },
-                // Web Development
-                { folder: 'WebDev/Scheduling/', category: 'web' },
-                // Game Development
-                { folder: 'GameDev/Karting/', category: 'game' },
-                // Android Development
-                { folder: 'AndroidDev/Gibberish/', category: 'android' },
-                // Graphics Design
-                { folder: 'GraphicsDesign/Malabago/', category: 'graphics' },
-                { folder: 'GraphicsDesign/Council/', category: 'graphics' },
-                { folder: 'GraphicsDesign/Arise/', category: 'graphics' }
-            ];
+            const projectsData = [{
+                title: 'Grading System',
+                desc: 'Enables creation of subjects, students, and grading per student. Built with C# and MongoDB for efficient data management.\n\nFeatures:\n• Subject management (add, edit, delete)\n• Student enrollment and records\n• Grade entry with automatic computation\n• Report generation (PDF/Excel)\n• User authentication with role-based access\n• Audit trail for all changes',
+                github: 'https://github.com/aldristh456034/grading-system',
+                folder: 'DesktopDev/GradingSystem/'
+            }, {
+                title: 'Banking System',
+                desc: 'Admin & user software with OTP, facial recognition, multi-language support, account management, and printing. Built with C#, SQLServer, and C++.\n\nKey Features:\n• Separate interfaces for Administrator and User\n• Account approval workflow\n• Transaction history with filters\n• Multi-language support (English, Filipino, Spanish)\n• Security: Email verification, OTP, Security Key, Facial Recognition\n• Account management with deactivation\n• Printable transaction summaries',
+                github: 'https://github.com/aldristh456034/banking-system',
+                folder: 'DesktopDev/BankingSystem/'
+            }, {
+                title: 'Point of Sale & Inventory',
+                desc: 'Cashier & admin interface with inventory, pricing, and reports. Built with Java 16, UCanAccess, and Microsoft Access.\n\nFeatures:\n• Cashier mode: fast checkout with barcode support\n• Admin dashboard: inventory overview\n• Product management (add, update, delete)\n• Real-time stock tracking\n• Sales reports and analytics\n• User account creation for staff\n• Low stock alerts',
+                github: 'https://github.com/aldristh456034/pos-inventory',
+                folder: 'DesktopDev/POS/'
+            }, {
+                title: 'Tabulation System',
+                desc: 'Fast-paced pageantry scoring with import/export of data. Built with C# and Excel integration.\n\nUsed in a school pageantry event at Camarines Sur.\n\nFeatures:\n• Real-time scoring for judges\n• Automatic calculation and ranking\n• Import/export of criteria and scores via Excel\n• Live leaderboard display\n• Tie-breaking logic\n• Print certificates and results',
+                github: 'https://github.com/aldristh456034/tabulation-system',
+                folder: 'DesktopDev/Tabulation/'
+            }, {
+                title: 'Payroll System',
+                desc: 'Admin system for reports, accounts, and salary management. Built with C# and SQL.\n\nFeatures:\n• Employee database management\n• Salary computation with deductions\n• Generate payslips (PDF)\n• Attendance and leave tracking\n• Role-based access for HR and employees\n• Comprehensive reports (monthly, yearly)\n• Tax computation support',
+                github: 'https://github.com/aldristh456034/payroll-system',
+                folder: 'DesktopDev/Payroll/'
+            }, {
+                title: 'Class Scheduling System',
+                desc: 'Room allocation & conflict detection for instructors and classrooms. Includes printing. Built with HTML, JavaScript, Bootstrap, Python, and SQL.\n\nFeatures:\n• Automatic detection of allocation conflicts\n• Room, instructor, and time management\n• Prevent duplication and confusion\n• Interactive calendar view\n• Printable schedules\n• Export to PDF',
+                github: 'https://github.com/aldristh456034/scheduling-system',
+                folder: 'WebDev/Scheduling/'
+            }, {
+                title: 'Karting Game',
+                desc: 'A typical kart racing game built with Unity and C#.\n\nGame Mechanics:\n• Multiple tracks with obstacles\n• Power-ups (speed boost, shield)\n• AI opponents with varying difficulty\n• Time trial and race modes\n• Customizable kart colors\n• Leaderboard with best lap times',
+                github: 'https://github.com/aldristh456034/karting-game',
+                folder: 'GameDev/Karting/'
+            }, {
+                title: 'Guess the Gibberish',
+                desc: 'Guess IT-related words from invented gibberish across multiple difficulty levels. Built with Java for Android Studio.\n\nGame Features:\n• Multiple difficulty levels (Easy, Medium, Hard)\n• IT-related word categories\n• Hints and timer system\n• Score tracking and high scores\n• Sound effects and animations\n• Offline play support',
+                github: 'https://github.com/aldristh456034/guess-gibberish',
+                folder: 'AndroidDev/Gibberish/'
+            }, {
+                title: 'Barangay Malabago Logo',
+                desc: 'Contest-winning logo for Barangay Malabago, Mangaldan. Created with Adobe Illustrator.\n\nDesign Elements:\n• Local cultural symbols\n• Modern and clean aesthetic\n• Versatile for various applications (print, digital)\n• Selected as official barangay logo',
+                github: 'https://github.com/aldristh456034/malabago-logo',
+                folder: 'GraphicsDesign/Malabago/'
+            }, {
+                title: 'Student Council Logo',
+                desc: 'Official renewed logo for the College Student Council. Created with Adobe Illustrator.\n\nDesign Approach:\n• Modern refresh of existing council identity\n• Symbolism of unity and leadership\n• Color palette representing the institution\n• Used across all council materials and merchandise',
+                github: 'https://github.com/aldristh456034/student-council-logo',
+                folder: 'GraphicsDesign/Council/'
+            }, {
+                title: 'Arise Guild Logo',
+                desc: 'Guild logo for a mobile gaming community. Created with Adobe Illustrator.\n\nDesign Features:\n• Epic fantasy theme\n• Recognizable icon for in-game use\n• Scalable for different sizes (avatar, banner)\n• Color scheme matching guild identity',
+                github: 'https://github.com/aldristh456034/arise-guild-logo',
+                folder: 'GraphicsDesign/Arise/'
+            }];
 
-            let projectsData = [];
-            let loadedCount = 0;
-            const totalProjects = projectFolders.length;
-
-            // ----- Helper: Create skeleton card -----
-            function createSkeletonCard() {
-                const skeleton = document.createElement('div');
-                skeleton.className = 'skeleton-card';
-                skeleton.innerHTML = `
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-title"></div>
-                    <div class="skeleton-desc"></div>
-                    <div class="skeleton-desc short"></div>
-                    <div class="skeleton-meta">
-                        <div class="skeleton-tech"></div>
-                        <div class="skeleton-tech wide"></div>
-                        <div class="skeleton-tech"></div>
-                    </div>
-                `;
-                return skeleton;
-            }
-
-            // ----- Render skeleton cards initially -----
-            function renderSkeletons() {
-                const categoryGrids = ['desktop-grid', 'web-grid', 'game-grid', 'android-grid', 'graphics-grid'];
-                const categoryCounts = {
-                    'desktop-grid': 5,
-                    'web-grid': 1,
-                    'game-grid': 1,
-                    'android-grid': 1,
-                    'graphics-grid': 3
-                };
-
-                categoryGrids.forEach(gridId => {
-                    const grid = document.getElementById(gridId);
-                    if (!grid) return;
-                    grid.innerHTML = '';
-                    const count = categoryCounts[gridId] || 3;
-                    for (let i = 0; i < count; i++) {
-                        grid.appendChild(createSkeletonCard());
-                    }
-                });
-            }
-
-            // ----- Helper: Fetch JSON file -----
-            function fetchJSON(url) {
-                return fetch(url, { cache: 'no-store' })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                        }
-                        return response.json();
-                    })
-                    .catch(error => {
-                        console.warn(`Failed to load ${url}:`, error);
-                        return null;
-                    });
-            }
-
-            // ----- Helper: Get images from folder -----
             function getImagesFromFolder(folder, callback) {
                 const images = [];
                 let found = false;
@@ -882,194 +904,53 @@
                         checkImage(index + 1);
                     };
                     img.src = imgPath;
-                    setTimeout(() => {
-                        if (!found && index > 1) {
-                            callback(images);
-                        }
-                    }, 2000);
                 }
                 checkImage(1);
             }
 
-            // ----- Load all projects -----
-            console.log('Loading projects...');
+            let projectsLoaded = 0;
+            const totalProjects = projectsData.length;
 
-            // Render skeletons immediately
-            renderSkeletons();
-
-            projectFolders.forEach((config, index) => {
-                const jsonUrl = config.folder + 'project.json';
-                console.log(`Attempting to load: ${jsonUrl}`);
-
-                fetchJSON(jsonUrl).then(jsonData => {
-                    getImagesFromFolder(config.folder, (images) => {
-                        if (jsonData) {
-                            console.log(`✅ Loaded: ${jsonData.title || config.folder}`);
-                            projectsData[index] = {
-                                folder: config.folder,
-                                category: config.category,
-                                title: jsonData.title || 'Untitled Project',
-                                shortDesc: jsonData.shortDesc || 'No description available.',
-                                longDesc: jsonData.longDesc || 'No detailed description available.',
-                                tech: jsonData.tech || ['Unknown'],
-                                github: jsonData.github || '#',
-                                images: images
-                            };
-                        } else {
-                            const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
-                            console.warn(`⚠️ No JSON found for: ${config.folder}`);
-                            projectsData[index] = {
-                                folder: config.folder,
-                                category: config.category,
-                                title: folderName,
-                                shortDesc: '⚠️ project.json not found. Please create it.',
-                                longDesc: '⚠️ project.json not found. Please create it in this folder.',
-                                tech: ['Unknown'],
-                                github: '#',
-                                images: images
-                            };
-                        }
-                        loadedCount++;
-                        console.log(`Progress: ${loadedCount}/${totalProjects}`);
-                        if (loadedCount === totalProjects) {
-                            console.log('✅ All projects loaded!');
-                            renderAllProjects();
-                        }
-                    });
+            projectsData.forEach((project, idx) => {
+                getImagesFromFolder(project.folder, (images) => {
+                    project.images = images;
+                    projectsLoaded++;
+                    if (projectsLoaded === totalProjects) {
+                        updateCardPreviews();
+                    }
                 });
             });
 
-            // Fallback timeout
             setTimeout(() => {
-                if (loadedCount < totalProjects) {
-                    console.warn('⚠️ Timeout - some projects may not have loaded');
-                    projectFolders.forEach((config, index) => {
-                        if (!projectsData[index]) {
-                            const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
-                            projectsData[index] = {
-                                folder: config.folder,
-                                category: config.category,
-                                title: folderName,
-                                shortDesc: '⚠️ Loading timeout.',
-                                longDesc: '⚠️ Loading timeout. Could not load project data.',
-                                tech: ['Unknown'],
-                                github: '#',
-                                images: []
-                            };
-                            loadedCount++;
-                            if (loadedCount === totalProjects) {
-                                renderAllProjects();
-                            }
-                        }
-                    });
-                }
-            }, 8000);
-
-            // ----- Render projects into grids -----
-            function renderAllProjects() {
-                const categories = {
-                    desktop: 'desktop-grid',
-                    web: 'web-grid',
-                    game: 'game-grid',
-                    android: 'android-grid',
-                    graphics: 'graphics-grid'
-                };
-
-                Object.keys(categories).forEach(cat => {
-                    const grid = document.getElementById(categories[cat]);
-                    if (!grid) return;
-                    grid.innerHTML = '';
-                    
-                    const projects = projectsData.filter(p => p.category === cat);
-                    if (projects.length === 0) {
-                        grid.innerHTML = '<div class="loading-text">No projects in this category.</div>';
-                        return;
+                projectsData.forEach(project => {
+                    if (!project.images) {
+                        project.images = [];
                     }
-                    projects.forEach((project, idx) => {
-                        const card = createProjectCard(project, projectsData.indexOf(project));
-                        grid.appendChild(card);
-                    });
                 });
-
                 updateCardPreviews();
-            }
+            }, 3000);
 
-            // ----- Create a project card element -----
-            function createProjectCard(project, index) {
-                const card = document.createElement('div');
-                card.className = 'project-card card';
-                card.dataset.index = index;
-
-                const previewDiv = document.createElement('div');
-                previewDiv.className = 'preview-img';
-                if (project.images && project.images.length > 0) {
-                    const img = document.createElement('img');
-                    img.src = project.images[0];
-                    img.alt = project.title;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'cover';
-                    previewDiv.appendChild(img);
-                } else {
-                    previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${project.title}</span>`;
-                }
-                card.appendChild(previewDiv);
-
-                const title = document.createElement('h3');
-                title.textContent = project.title;
-                card.appendChild(title);
-
-                const desc = document.createElement('p');
-                desc.textContent = project.shortDesc;
-                card.appendChild(desc);
-
-                const meta = document.createElement('div');
-                meta.className = 'meta';
-                const wrapper = document.createElement('div');
-                wrapper.className = 'tech-wrapper';
-                if (Array.isArray(project.tech)) {
-                    project.tech.forEach(t => {
-                        const span = document.createElement('span');
-                        span.className = 'tech';
-                        span.textContent = t;
-                        wrapper.appendChild(span);
-                    });
-                }
-                meta.appendChild(wrapper);
-                card.appendChild(meta);
-
-                card.addEventListener('click', function() {
-                    openModal(parseInt(this.dataset.index));
-                });
-
-                return card;
-            }
-
-            // ----- Update card preview images -----
             function updateCardPreviews() {
-                document.querySelectorAll('.project-card').forEach((card) => {
-                    const index = parseInt(card.dataset.index);
+                document.querySelectorAll('.project-card').forEach((card, index) => {
                     const data = projectsData[index];
                     if (data && data.images && data.images.length > 0) {
                         const imgContainer = card.querySelector('.preview-img');
-                        if (imgContainer && !imgContainer.querySelector('img')) {
-                            imgContainer.innerHTML = '';
-                            const img = document.createElement('img');
-                            img.src = data.images[0];
-                            img.alt = data.title;
-                            img.style.width = '100%';
-                            img.style.height = '100%';
-                            img.style.objectFit = 'cover';
-                            img.onerror = function() {
-                                imgContainer.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${data.title}</span>`;
-                            };
-                            imgContainer.appendChild(img);
-                        }
+                        imgContainer.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = data.images[0];
+                        img.alt = data.title;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        img.onerror = function() {
+                            imgContainer.innerHTML =
+                                `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${data.title}</span>`;
+                        };
+                        imgContainer.appendChild(img);
                     }
                 });
             }
 
-            // ----- Modal functionality -----
             const modalOverlay = document.getElementById('projectModal');
             const modalContent = document.getElementById('modalContent');
             const modalTitle = document.getElementById('modalTitle');
@@ -1085,18 +966,19 @@
             let currentImageIndex = 0;
             let currentProject = null;
 
-            function openModal(index) {
-                const data = projectsData[index];
+            function openModal(projectIdx) {
+                const data = projectsData[projectIdx];
                 if (!data) return;
-                currentProjectIndex = index;
+                currentProjectIndex = projectIdx;
                 currentProject = data;
                 currentImageIndex = 0;
 
                 modalTitle.textContent = data.title;
-                modalDesc.innerHTML = `<strong>Description:</strong>\n${data.longDesc}`;
+                modalDesc.innerHTML = `<strong>Description:</strong>\n${data.desc}`;
                 modalGitHub.href = data.github || '#';
 
                 modalContent.scrollTop = 0;
+
                 showImage(0);
                 modalOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
@@ -1108,7 +990,8 @@
                 if (images.length === 0) {
                     modalImg.style.display = 'none';
                     modalPlaceholder.style.display = 'flex';
-                    modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>no preview</span>`;
+                    modalPlaceholder.innerHTML =
+                        `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>no preview</span>`;
                     return;
                 }
                 const safeIndex = index % images.length;
@@ -1120,12 +1003,14 @@
                     modalImg.onerror = function() {
                         modalImg.style.display = 'none';
                         modalPlaceholder.style.display = 'flex';
-                        modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>image not found</span>`;
+                        modalPlaceholder.innerHTML =
+                            `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>image not found</span>`;
                     };
                 } else {
                     modalImg.style.display = 'none';
                     modalPlaceholder.style.display = 'flex';
-                    modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>preview</span>`;
+                    modalPlaceholder.innerHTML =
+                        `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>preview</span>`;
                 }
             }
 
@@ -1150,6 +1035,15 @@
                 document.body.style.overflow = '';
             }
 
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    const idx = this.dataset.project;
+                    if (idx !== undefined) {
+                        openModal(parseInt(idx));
+                    }
+                });
+            });
+
             prevBtn.addEventListener('click', prevImage);
             nextBtn.addEventListener('click', nextImage);
             closeBtn.addEventListener('click', closeModal);
@@ -1162,13 +1056,6 @@
                 if (e.key === 'ArrowRight') nextImage();
                 if (e.key === 'ArrowLeft') prevImage();
             });
-
-            setTimeout(updateCardPreviews, 3000);
-            setTimeout(updateCardPreviews, 6000);
-
-            console.log('Portfolio loaded. Check console for any errors.');
-            console.log('Project folders configured:', projectFolders.length);
-
         })();
     </script>
 
