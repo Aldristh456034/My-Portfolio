@@ -9,6 +9,52 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css" />
+    <style>
+        .retry-btn {
+            margin-top: 12px;
+            padding: 6px 16px;
+            background: #2a3d55;
+            border: 1px solid #4a6a8a;
+            border-radius: 20px;
+            color: #b8d0f0;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            align-self: center;
+        }
+        .retry-btn:hover {
+            background: #3a5a7a;
+            border-color: #6a8aaa;
+            color: #ffffff;
+        }
+        .error-card {
+            padding: 24px 22px 22px;
+            border-radius: 28px;
+            background: rgba(40, 20, 20, 0.4);
+            border: 1px solid rgba(255, 80, 80, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            text-align: center;
+            color: #cc8899;
+        }
+        .error-card .error-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.6;
+        }
+        .error-card .error-text {
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .error-card .error-sub {
+            font-size: 0.75rem;
+            color: #886677;
+        }
+    </style>
 </head>
 <body>
 
@@ -133,22 +179,16 @@
         (function() {
             // ================================================================
             // PROJECT CONFIGURATION
-            // Each project folder should contain a project.json file
             // ================================================================
             const projectFolders = [
-                // Desktop Development
                 { folder: 'DesktopDev/GradingSystem/', category: 'desktop' },
                 { folder: 'DesktopDev/BankingSystem/', category: 'desktop' },
                 { folder: 'DesktopDev/POS/', category: 'desktop' },
                 { folder: 'DesktopDev/Tabulation/', category: 'desktop' },
                 { folder: 'DesktopDev/Payroll/', category: 'desktop' },
-                // Web Development
                 { folder: 'WebDev/Scheduling/', category: 'web' },
-                // Game Development
                 { folder: 'GameDev/Karting/', category: 'game' },
-                // Android Development
                 { folder: 'AndroidDev/Gibberish/', category: 'android' },
-                // Graphics Design
                 { folder: 'GraphicsDesign/Malabago/', category: 'graphics' },
                 { folder: 'GraphicsDesign/Council/', category: 'graphics' },
                 { folder: 'GraphicsDesign/Arise/', category: 'graphics' }
@@ -157,8 +197,10 @@
             let projectsData = [];
             let loadedCount = 0;
             const totalProjects = projectFolders.length;
+            const retryAttempts = {};
+            const MAX_RETRIES = 3;
 
-            // ----- Helper: Create skeleton card -----
+            // ----- Create skeleton card -----
             function createSkeletonCard() {
                 const skeleton = document.createElement('div');
                 skeleton.className = 'skeleton-card';
@@ -176,129 +218,134 @@
                 return skeleton;
             }
 
-            // ----- Render skeleton cards initially -----
+            // ----- Create error card -----
+            function createErrorCard(projectIndex, errorMessage) {
+                const card = document.createElement('div');
+                card.className = 'error-card';
+                card.dataset.index = projectIndex;
+                card.innerHTML = `
+                    <div class="error-icon">⚠️</div>
+                    <div class="error-text">${errorMessage || 'Failed to load'}</div>
+                    <div class="error-sub">Click retry to try again</div>
+                    <button class="retry-btn" data-index="${projectIndex}">🔄 Retry</button>
+                `;
+                card.querySelector('.retry-btn').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    retryProject(parseInt(this.dataset.index));
+                });
+                return card;
+            }
+
+            // ----- Render skeletons -----
             function renderSkeletons() {
-                const categoryGrids = ['desktop-grid', 'web-grid', 'game-grid', 'android-grid', 'graphics-grid'];
-                const categoryCounts = {
+                const grids = {
                     'desktop-grid': 5,
                     'web-grid': 1,
                     'game-grid': 1,
                     'android-grid': 1,
                     'graphics-grid': 3
                 };
-
-                categoryGrids.forEach(gridId => {
+                Object.keys(grids).forEach(gridId => {
                     const grid = document.getElementById(gridId);
                     if (!grid) return;
                     grid.innerHTML = '';
-                    const count = categoryCounts[gridId] || 3;
-                    for (let i = 0; i < count; i++) {
+                    for (let i = 0; i < grids[gridId]; i++) {
                         grid.appendChild(createSkeletonCard());
                     }
                 });
             }
 
-            // ----- Helper: Fetch JSON file with retry -----
-            function fetchJSONWithRetry(url, maxRetries = 3, delay = 1000) {
-                return new Promise((resolve) => {
-                    let attempts = 0;
-                    
-                    function attemptFetch() {
-                        attempts++;
-                        fetch(url, { cache: 'no-store' })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => resolve(data))
-                            .catch(error => {
-                                console.warn(`Attempt ${attempts} failed for ${url}:`, error);
-                                if (attempts < maxRetries) {
-                                    setTimeout(attemptFetch, delay * attempts);
-                                } else {
-                                    resolve(null);
-                                }
-                            });
-                    }
-                    
-                    attemptFetch();
-                });
-            }
-
-            // ----- Helper: Get images from folder with better timeout handling -----
-            function getImagesFromFolder(folder, callback) {
+            // ----- FAST image detection: Check first few images in parallel -----
+            function getImagesFast(folder, callback) {
                 const images = [];
                 let found = false;
-                let checked = 0;
-                const maxAttempts = 50;
-                let timeoutId = null;
+                let pending = 0;
+                const MAX_IMAGES = 10; // Only check up to 10 images max
+                let completed = false;
 
                 function checkImage(index) {
-                    if (index > maxAttempts) {
-                        if (timeoutId) clearTimeout(timeoutId);
-                        callback(images);
+                    if (completed || index > MAX_IMAGES) {
+                        if (!completed) {
+                            completed = true;
+                            callback(images);
+                        }
                         return;
                     }
+                    
+                    pending++;
                     const imgPath = folder + 'preview' + index + '.png';
                     const img = new Image();
                     
-                    const imageTimeout = setTimeout(() => {
+                    const timeout = setTimeout(() => {
                         img.src = '';
-                        if (found && index > 1) {
-                            if (timeoutId) clearTimeout(timeoutId);
+                        pending--;
+                        if (!found && index >= 3 && !completed) {
+                            completed = true;
                             callback(images);
                             return;
                         }
-                        if (!found && index > 5) {
-                            if (timeoutId) clearTimeout(timeoutId);
-                            callback(images);
-                            return;
-                        }
-                        checkImage(index + 1);
-                    }, 3000);
+                        if (!completed) checkImage(index + 1);
+                    }, 800);
 
                     img.onload = function() {
-                        clearTimeout(imageTimeout);
+                        clearTimeout(timeout);
                         images.push(imgPath);
                         found = true;
-                        checkImage(index + 1);
+                        pending--;
+                        if (!completed) checkImage(index + 1);
                     };
                     img.onerror = function() {
-                        clearTimeout(imageTimeout);
-                        if (found && index > 1) {
-                            if (timeoutId) clearTimeout(timeoutId);
+                        clearTimeout(timeout);
+                        pending--;
+                        // If we found some images and hit a 404, stop
+                        if (found && index > 1 && !completed) {
+                            completed = true;
                             callback(images);
                             return;
                         }
-                        if (!found && index > 5) {
-                            if (timeoutId) clearTimeout(timeoutId);
+                        // If no images found after checking 3, stop
+                        if (!found && index >= 3 && !completed) {
+                            completed = true;
                             callback(images);
                             return;
                         }
-                        checkImage(index + 1);
+                        if (!completed) checkImage(index + 1);
                     };
                     img.src = imgPath;
                 }
+
+                // Start checking from index 1
                 checkImage(1);
+
+                // Safety timeout - ensure callback always fires
+                setTimeout(() => {
+                    if (!completed) {
+                        completed = true;
+                        callback(images);
+                    }
+                }, 3000);
             }
 
-            // ----- Load all projects -----
-            console.log('Loading projects...');
+            // ----- Fetch JSON with retry -----
+            function fetchJSON(url) {
+                return fetch(url, { cache: 'no-store' })
+                    .then(response => response.ok ? response.json() : null)
+                    .catch(() => null);
+            }
 
-            // Render skeletons immediately
-            renderSkeletons();
+            // ----- Load a single project (optimized) -----
+            function loadSingleProject(index) {
+                const config = projectFolders[index];
+                if (!config) return;
 
-            projectFolders.forEach((config, index) => {
                 const jsonUrl = config.folder + 'project.json';
-                console.log(`Attempting to load: ${jsonUrl}`);
 
-                fetchJSONWithRetry(jsonUrl, 3, 1000).then(jsonData => {
-                    getImagesFromFolder(config.folder, (images) => {
+                fetchJSON(jsonUrl).then(jsonData => {
+                    // Load images in parallel (fast)
+                    getImagesFast(config.folder, (images) => {
+                        let projectData;
                         if (jsonData) {
-                            console.log(`✅ Loaded: ${jsonData.title || config.folder}`);
-                            projectsData[index] = {
+                            projectData = {
                                 folder: config.folder,
                                 category: config.category,
                                 title: jsonData.title || 'Untitled Project',
@@ -310,84 +357,101 @@
                             };
                         } else {
                             const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
-                            console.warn(`⚠️ No JSON found for: ${config.folder}`);
-                            projectsData[index] = {
+                            projectData = {
                                 folder: config.folder,
                                 category: config.category,
                                 title: folderName,
-                                shortDesc: '⚠️ project.json not found. Please create it.',
-                                longDesc: '⚠️ project.json not found. Please create it in this folder.',
+                                shortDesc: '⚠️ project.json not found',
+                                longDesc: '⚠️ project.json not found in this folder.',
                                 tech: ['Unknown'],
                                 github: '#',
                                 images: images
                             };
                         }
-                        loadedCount++;
-                        console.log(`Progress: ${loadedCount}/${totalProjects}`);
-                        if (loadedCount === totalProjects) {
-                            console.log('✅ All projects loaded!');
-                            renderAllProjects();
-                        }
-                    });
-                });
-            });
-
-            // Fallback timeout - extended to 15 seconds for projects with many images
-            setTimeout(() => {
-                if (loadedCount < totalProjects) {
-                    console.warn('⚠️ Timeout - some projects may not have loaded');
-                    projectFolders.forEach((config, index) => {
-                        if (!projectsData[index]) {
-                            const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
-                            projectsData[index] = {
-                                folder: config.folder,
-                                category: config.category,
-                                title: folderName,
-                                shortDesc: '⚠️ Loading timeout.',
-                                longDesc: '⚠️ Loading timeout.',
-                                tech: ['Unknown'],
-                                github: '#',
-                                images: []
-                            };
-                            loadedCount++;
-                            if (loadedCount === totalProjects) {
-                                renderAllProjects();
+                        
+                        projectsData[index] = projectData;
+                        
+                        // Replace skeleton with actual card
+                        const grid = document.getElementById(config.category + '-grid');
+                        if (grid) {
+                            const existing = grid.querySelector(`[data-index="${index}"]`);
+                            if (existing) {
+                                const newCard = createProjectCard(projectData, index);
+                                existing.replaceWith(newCard);
                             }
                         }
+                        
+                        loadedCount++;
+                        if (loadedCount === totalProjects) {
+                            console.log('✅ All projects loaded!');
+                            updateCardPreviews();
+                        }
                     });
-                }
-            }, 15000);
-
-            // ----- Render projects into grids -----
-            function renderAllProjects() {
-                const categories = {
-                    desktop: 'desktop-grid',
-                    web: 'web-grid',
-                    game: 'game-grid',
-                    android: 'android-grid',
-                    graphics: 'graphics-grid'
-                };
-
-                Object.keys(categories).forEach(cat => {
-                    const grid = document.getElementById(categories[cat]);
-                    if (!grid) return;
-                    grid.innerHTML = '';
-                    
-                    const projects = projectsData.filter(p => p.category === cat);
-                    if (projects.length === 0) {
-                        grid.innerHTML = '<div class="loading-text">No projects in this category.</div>';
-                        return;
-                    }
-                    projects.forEach((project, idx) => {
-                        const card = createProjectCard(project, projectsData.indexOf(project));
-                        grid.appendChild(card);
+                }).catch(() => {
+                    // If JSON fetch fails, still try to load images
+                    getImagesFast(config.folder, (images) => {
+                        const folderName = config.folder.split('/').filter(Boolean).pop() || 'Project';
+                        projectsData[index] = {
+                            folder: config.folder,
+                            category: config.category,
+                            title: folderName,
+                            shortDesc: '⚠️ Failed to load',
+                            longDesc: '⚠️ Failed to load project data.',
+                            tech: ['Unknown'],
+                            github: '#',
+                            images: images
+                        };
+                        
+                        const grid = document.getElementById(config.category + '-grid');
+                        if (grid) {
+                            const existing = grid.querySelector(`[data-index="${index}"]`);
+                            if (existing) {
+                                const newCard = createProjectCard(projectsData[index], index);
+                                existing.replaceWith(newCard);
+                            }
+                        }
+                        loadedCount++;
+                        if (loadedCount === totalProjects) {
+                            console.log('✅ All projects loaded (with some errors)');
+                            updateCardPreviews();
+                        }
                     });
                 });
-
-                updateCardPreviews();
             }
 
-            // ----- Create a project card element -----
+            // ----- Retry a specific project -----
+            function retryProject(index) {
+                retryAttempts[index] = (retryAttempts[index] || 0) + 1;
+                if (retryAttempts[index] > MAX_RETRIES) {
+                    const config = projectFolders[index];
+                    const grid = document.getElementById(config.category + '-grid');
+                    if (grid) {
+                        const existing = grid.querySelector(`[data-index="${index}"]`);
+                        if (existing) {
+                            existing.innerHTML = `
+                                <div class="error-icon">❌</div>
+                                <div class="error-text">Failed after ${MAX_RETRIES} attempts</div>
+                                <div class="error-sub">Please check folder structure</div>
+                            `;
+                        }
+                    }
+                    return;
+                }
+                
+                const config = projectFolders[index];
+                const grid = document.getElementById(config.category + '-grid');
+                if (grid) {
+                    const existing = grid.querySelector(`[data-index="${index}"]`);
+                    if (existing) {
+                        const skeleton = createSkeletonCard();
+                        skeleton.dataset.index = index;
+                        existing.replaceWith(skeleton);
+                    }
+                }
+                loadSingleProject(index);
+            }
+
+            // ----- Create project card -----
             function createProjectCard(project, index) {
                 const card = document.createElement('div');
                 card.className = 'project-card card';
@@ -402,6 +466,9 @@
                     img.style.width = '100%';
                     img.style.height = '100%';
                     img.style.objectFit = 'cover';
+                    img.onerror = function() {
+                        previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${project.title}</span>`;
+                    };
                     previewDiv.appendChild(img);
                 } else {
                     previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${project.title}</span>`;
@@ -438,7 +505,7 @@
                 return card;
             }
 
-            // ----- Update card preview images -----
+            // ----- Update card previews -----
             function updateCardPreviews() {
                 document.querySelectorAll('.project-card').forEach((card) => {
                     const index = parseInt(card.dataset.index);
@@ -462,7 +529,7 @@
                 });
             }
 
-            // ----- Modal functionality -----
+            // ----- Modal -----
             const modalOverlay = document.getElementById('projectModal');
             const modalContent = document.getElementById('modalContent');
             const modalTitle = document.getElementById('modalTitle');
@@ -484,11 +551,9 @@
                 currentProjectIndex = index;
                 currentProject = data;
                 currentImageIndex = 0;
-
                 modalTitle.textContent = data.title;
                 modalDesc.innerHTML = `<strong>Description:</strong>\n${data.longDesc}`;
                 modalGitHub.href = data.github || '#';
-
                 modalContent.scrollTop = 0;
                 showImage(0);
                 modalOverlay.classList.add('active');
@@ -556,11 +621,21 @@
                 if (e.key === 'ArrowLeft') prevImage();
             });
 
-            setTimeout(updateCardPreviews, 3000);
-            setTimeout(updateCardPreviews, 6000);
+            // ----- START -----
+            console.log('🚀 Loading projects (optimized)...');
+            renderSkeletons();
 
-            console.log('Portfolio loaded. Check console for any errors.');
-            console.log('Project folders configured:', projectFolders.length);
+            // Load all projects in parallel (not sequential)
+            projectFolders.forEach((_, index) => {
+                retryAttempts[index] = 0;
+                loadSingleProject(index);
+            });
+
+            // Periodic updates for images that load late
+            setTimeout(updateCardPreviews, 2000);
+            setTimeout(updateCardPreviews, 5000);
+
+            window.retryProject = retryProject;
 
         })();
     </script>
