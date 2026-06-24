@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aldrich Trinidad · Portfolio</title>
     <!-- Google Font & Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <style>
         /* ----- RESET & BASE ----- */
@@ -14,6 +17,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             background: #0b0d10;
             font-family: 'Inter', sans-serif;
@@ -21,9 +25,19 @@
             line-height: 1.6;
             scroll-behavior: smooth;
         }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #181c22; }
-        ::-webkit-scrollbar-thumb { background: #3b4b5e; border-radius: 12px; }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #181c22;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3b4b5e;
+            border-radius: 12px;
+        }
 
         .container {
             max-width: 1400px;
@@ -38,29 +52,50 @@
             -webkit-backdrop-filter: blur(6px);
             border-radius: 32px;
             border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 20px 40px -18px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.03);
+            box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.03);
             transition: all 0.25s ease;
             cursor: default;
         }
+
         .card:hover {
             background: rgba(28, 36, 48, 0.75);
             border-color: rgba(100, 180, 255, 0.12);
-            box-shadow: 0 28px 48px -20px #0a0e14, inset 0 1px 0 rgba(255,255,255,0.06);
+            box-shadow: 0 28px 48px -20px #0a0e14, inset 0 1px 0 rgba(255, 255, 255, 0.06);
         }
 
         /* ----- ANIMATIONS ----- */
         @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(28px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .animate-in {
             animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
             opacity: 0;
         }
-        .delay-1 { animation-delay: 0.08s; }
-        .delay-2 { animation-delay: 0.16s; }
-        .delay-3 { animation-delay: 0.24s; }
-        .delay-4 { animation-delay: 0.32s; }
+
+        .delay-1 {
+            animation-delay: 0.08s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.16s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.24s;
+        }
+
+        .delay-4 {
+            animation-delay: 0.32s;
+        }
 
         /* ----- HEADER ----- */
         header {
@@ -69,8 +104,9 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -81,17 +117,20 @@
             color: #e8edf2;
             text-decoration: none;
         }
+
         .logo img {
             height: 42px;
             width: auto;
             border-radius: 8px;
         }
+
         .logo span {
             background: linear-gradient(145deg, #b0d4ff, #7aa9ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .nav-links {
             display: flex;
             gap: 28px;
@@ -99,6 +138,7 @@
             font-size: 0.95rem;
             color: #9aaec9;
         }
+
         .nav-links a {
             color: inherit;
             text-decoration: none;
@@ -106,6 +146,7 @@
             border-bottom: 2px solid transparent;
             padding-bottom: 4px;
         }
+
         .nav-links a:hover {
             color: #d6e5ff;
             border-bottom-color: #4d8eff;
@@ -121,6 +162,7 @@
             margin: 48px 0 56px;
             gap: 20px;
         }
+
         .profile-pic {
             width: 150px;
             height: 150px;
@@ -134,15 +176,18 @@
             transition: transform 0.2s ease;
             overflow: hidden;
         }
+
         .profile-pic:hover {
             transform: scale(1.02);
         }
+
         .profile-pic img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
+
         .profile-pic span {
             font-size: 4.6rem;
             font-weight: 300;
@@ -150,12 +195,14 @@
             letter-spacing: 2px;
             opacity: 0.9;
         }
+
         .profile-text h1 {
             font-size: 2.8rem;
             font-weight: 700;
             letter-spacing: -0.02em;
             margin-bottom: 4px;
         }
+
         .profile-text .badge {
             background: #1f3144;
             padding: 4px 18px;
@@ -168,6 +215,7 @@
             backdrop-filter: blur(4px);
             margin-top: 4px;
         }
+
         .profile-text p {
             max-width: 560px;
             margin: 14px auto 0;
@@ -185,6 +233,7 @@
             align-items: center;
             gap: 12px;
         }
+
         .section-title .material-icons-round {
             font-size: 2.2rem;
             color: #6d8fc9;
@@ -201,6 +250,7 @@
             gap: 12px;
             color: #b6cbe5;
         }
+
         .sub-section-title .material-icons-round {
             font-size: 1.8rem;
             color: #6d8fc9;
@@ -222,6 +272,7 @@
             flex-direction: column;
             cursor: pointer;
         }
+
         .project-card .preview-img {
             width: 100%;
             aspect-ratio: 16/9;
@@ -239,33 +290,39 @@
             font-weight: 500;
             overflow: hidden;
         }
+
         .project-card .preview-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+
         .project-card .preview-img i {
             font-size: 2.2rem;
             margin-right: 8px;
             opacity: 0.7;
         }
+
         .project-card .preview-img span {
             background: #0f1620;
             padding: 4px 14px;
             border-radius: 60px;
             color: #9bb4d9;
         }
+
         .project-card h3 {
             font-weight: 600;
             font-size: 1.3rem;
             margin-bottom: 6px;
         }
+
         .project-card p {
             color: #b1c5df;
             font-size: 0.95rem;
             flex: 1;
             margin: 6px 0 16px;
         }
+
         .project-card .meta {
             display: flex;
             flex-wrap: wrap;
@@ -276,6 +333,7 @@
             margin-top: 6px;
             gap: 8px;
         }
+
         .project-card .meta .tech {
             color: #829fc9;
             font-size: 0.8rem;
@@ -285,6 +343,7 @@
             display: inline-block;
             white-space: nowrap;
         }
+
         .project-card .meta .tech-wrapper {
             display: flex;
             flex-wrap: wrap;
@@ -297,18 +356,30 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
         @media (max-width: 640px) {
             .project-grid {
                 grid-template-columns: 1fr;
             }
-            .profile-text h1 { font-size: 2.2rem; }
-            .nav-links { gap: 14px; font-size: 0.85rem; flex-wrap: wrap; }
+
+            .profile-text h1 {
+                font-size: 2.2rem;
+            }
+
+            .nav-links {
+                gap: 14px;
+                font-size: 0.85rem;
+                flex-wrap: wrap;
+            }
         }
 
         /* ----- MODAL ----- */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
@@ -318,6 +389,7 @@
             z-index: 1000;
             padding: 20px;
         }
+
         .modal-overlay.active {
             display: flex;
         }
@@ -345,12 +417,15 @@
             padding-top: 20px;
             scroll-behavior: smooth;
         }
+
         .modal-content::-webkit-scrollbar {
             width: 6px;
         }
+
         .modal-content::-webkit-scrollbar-track {
             background: transparent;
         }
+
         .modal-content::-webkit-scrollbar-thumb {
             background: #3b5a7a;
             border-radius: 12px;
@@ -373,10 +448,11 @@
             justify-content: center;
             transition: 0.2s;
             z-index: 20;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             margin-left: 12px;
             flex-shrink: 0;
         }
+
         .modal-close:hover {
             background: #334a63;
             color: white;
@@ -390,6 +466,7 @@
             margin-bottom: 4px;
             padding-right: 4px;
         }
+
         .modal-title {
             font-weight: 600;
             font-size: 1.6rem;
@@ -405,6 +482,7 @@
             flex-shrink: 0;
             clear: both;
         }
+
         .modal-gallery img {
             width: 100%;
             height: auto;
@@ -413,6 +491,7 @@
             display: block;
             background: #0b111a;
         }
+
         .modal-gallery .placeholder-img {
             width: 100%;
             aspect-ratio: 16/9;
@@ -425,6 +504,7 @@
             font-weight: 500;
             gap: 12px;
         }
+
         .modal-nav {
             display: flex;
             justify-content: space-between;
@@ -432,6 +512,7 @@
             gap: 12px;
             flex-shrink: 0;
         }
+
         .modal-nav button {
             background: #1f2f42;
             border: 1px solid #314a63;
@@ -447,6 +528,7 @@
             flex: 1;
             justify-content: center;
         }
+
         .modal-nav button:hover {
             background: #2b405a;
             border-color: #5b84c7;
@@ -464,6 +546,7 @@
             word-wrap: break-word;
             flex-shrink: 0;
         }
+
         .modal-desc strong {
             color: #aac4f0;
         }
@@ -474,6 +557,7 @@
             flex-shrink: 0;
             padding-bottom: 4px;
         }
+
         .modal-footer a {
             color: #7aa9ff;
             text-decoration: none;
@@ -486,6 +570,7 @@
             border: 1px solid #314a63;
             transition: 0.2s;
         }
+
         .modal-footer a:hover {
             background: #2b405a;
             border-color: #5b84c7;
@@ -505,12 +590,14 @@
             align-items: center;
             gap: 16px;
         }
+
         .contact-section .info {
             display: flex;
             flex-wrap: wrap;
             gap: 20px 32px;
             align-items: center;
         }
+
         .contact-section .info a {
             color: #b8d0f0;
             text-decoration: none;
@@ -523,15 +610,18 @@
             border-radius: 60px;
             white-space: nowrap;
         }
+
         .contact-section .info a:hover {
             background: #1f3147;
             color: #e2edff;
         }
+
         .contact-section .info .material-icons-round {
             font-size: 1.4rem;
             color: #7ba2f0;
             flex-shrink: 0;
         }
+
         .contact-section .badge-status {
             background: #1a283b;
             padding: 6px 18px;
@@ -546,13 +636,16 @@
                 align-items: stretch;
                 gap: 16px;
             }
+
             .contact-section .info {
                 gap: 12px 16px;
             }
+
             .contact-section .info a {
                 white-space: normal;
                 word-break: break-all;
             }
+
             .contact-section .badge-status {
                 text-align: center;
             }
@@ -568,6 +661,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -593,7 +687,8 @@
             <div class="profile-text">
                 <h1>Aldrich Trinidad</h1>
                 <div class="badge">✦ IT · Software Developer</div>
-                <p>Software Developer. I build immersive digital experiences with a passion for clean code and elegant design.</p>
+                <p>Software Developer. I build immersive digital experiences with a passion for clean code and elegant
+                    design.</p>
             </div>
         </section>
 
@@ -615,23 +710,29 @@
                     <div class="tech-wrapper">
                         <span class="tech">C#</span>
                         <span class="tech">MongoDB</span>
+                        <span class="tech">Guna UI</span>
                     </div>
                 </div>
             </div>
             <div class="project-card card" data-project="1">
-                <div class="preview-img"><i class="material-icons-round">account_balance</i> <span>C# · SQLServer</span></div>
+                <div class="preview-img"><i class="material-icons-round">account_balance</i> <span>C# · MS SQL</span>
+                </div>
                 <h3>Banking System</h3>
                 <p>Admin & user software with OTP, facial recognition, multi-language, and account management.</p>
                 <div class="meta">
                     <div class="tech-wrapper">
                         <span class="tech">C#</span>
-                        <span class="tech">SQLServer</span>
+                        <span class="tech">MS SQL</span>
                         <span class="tech">C++</span>
+                        <span class="tech">Google API</span>
+                        <span class="tech">Twillio</span>
+                        <span class="tech">Guna UI</span>
                     </div>
                 </div>
             </div>
             <div class="project-card card" data-project="2">
-                <div class="preview-img"><i class="material-icons-round">shopping_cart</i> <span>Java · Access</span></div>
+                <div class="preview-img"><i class="material-icons-round">shopping_cart</i> <span>Java · Access</span>
+                </div>
                 <h3>Point of Sale & Inventory Management System</h3>
                 <p>Cashier & admin interface with inventory, pricing, and reports.</p>
                 <div class="meta">
@@ -660,7 +761,8 @@
                 <div class="meta">
                     <div class="tech-wrapper">
                         <span class="tech">C#</span>
-                        <span class="tech">SQL</span>
+                        <span class="tech">MS SQL</span>
+                        <span class="tech">Guna UI</span>
                     </div>
                 </div>
             </div>
@@ -681,7 +783,7 @@
                         <span class="tech">JavaScript</span>
                         <span class="tech">Bootstrap</span>
                         <span class="tech">Python</span>
-                        <span class="tech">SQL</span>
+                        <span class="tech">MySQL</span>
                     </div>
                 </div>
             </div>
@@ -764,15 +866,15 @@
         <div class="contact-section animate-in delay-4" id="contact">
             <div class="info">
                 <a href="mailto:trinidadaldrich328@gmail.com">
-                    <span class="material-icons-round">mail</span> 
+                    <span class="material-icons-round">mail</span>
                     <span>trinidadaldrich328@gmail.com</span>
                 </a>
                 <a href="https://linkedin.com/in/aldrichtrinidad" target="_blank">
-                    <span class="material-icons-round">link</span> 
+                    <span class="material-icons-round">link</span>
                     <span>linkedin.com/in/aldrichtrinidad</span>
                 </a>
                 <a href="https://github.com/aldristh456034" target="_blank">
-                    <span class="material-icons-round">github</span> 
+                    <span class="material-icons-round">github</span>
                     <span>github.com/aldristh456034</span>
                 </a>
             </div>
@@ -792,12 +894,14 @@
                     <h2 class="modal-title" id="modalTitle">Project</h2>
                     <button class="modal-close" id="modalCloseBtn">✕</button>
                 </div>
-                
+
                 <div class="modal-gallery" id="modalGallery">
                     <div class="placeholder-img" id="modalImagePlaceholder">
                         <i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>preview</span>
                     </div>
-                    <img id="modalImage" style="display:none; width:100%; height:auto; max-height:380px; object-fit:contain;" alt="project preview" />
+                    <img id="modalImage"
+                        style="display:none; width:100%; height:auto; max-height:380px; object-fit:contain;"
+                        alt="project preview" />
                 </div>
                 <div class="modal-nav">
                     <button id="modalPrev"><span class="material-icons-round">chevron_left</span> Prev</button>
@@ -816,7 +920,7 @@
     </div>
 
     <script>
-        (function() {
+        (function () {
             const projectsData = [{
                 title: 'Grading System',
                 desc: 'Enables creation of subjects, students, and grading per student. Built with C# and MongoDB for efficient data management.\n\nFeatures:\n• Subject management (add, edit, delete)\n• Student enrollment and records\n• Grade entry with automatic computation\n• Report generation (PDF/Excel)\n• User authentication with role-based access\n• Audit trail for all changes',
@@ -887,12 +991,12 @@
                     }
                     const imgPath = folder + 'preview' + index + '.png';
                     const img = new Image();
-                    img.onload = function() {
+                    img.onload = function () {
                         images.push(imgPath);
                         found = true;
                         checkImage(index + 1);
                     };
-                    img.onerror = function() {
+                    img.onerror = function () {
                         if (found && index > 1) {
                             callback(images);
                             return;
@@ -942,7 +1046,7 @@
                         img.style.width = '100%';
                         img.style.height = '100%';
                         img.style.objectFit = 'cover';
-                        img.onerror = function() {
+                        img.onerror = function () {
                             imgContainer.innerHTML =
                                 `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${data.title}</span>`;
                         };
@@ -1000,7 +1104,7 @@
                     modalImg.src = url;
                     modalImg.style.display = 'block';
                     modalPlaceholder.style.display = 'none';
-                    modalImg.onerror = function() {
+                    modalImg.onerror = function () {
                         modalImg.style.display = 'none';
                         modalPlaceholder.style.display = 'flex';
                         modalPlaceholder.innerHTML =
@@ -1036,7 +1140,7 @@
             }
 
             document.querySelectorAll('.project-card').forEach(card => {
-                card.addEventListener('click', function(e) {
+                card.addEventListener('click', function (e) {
                     const idx = this.dataset.project;
                     if (idx !== undefined) {
                         openModal(parseInt(idx));
@@ -1047,10 +1151,10 @@
             prevBtn.addEventListener('click', prevImage);
             nextBtn.addEventListener('click', nextImage);
             closeBtn.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', function(e) {
+            modalOverlay.addEventListener('click', function (e) {
                 if (e.target === modalOverlay) closeModal();
             });
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (!modalOverlay.classList.contains('active')) return;
                 if (e.key === 'Escape') closeModal();
                 if (e.key === 'ArrowRight') nextImage();
@@ -1060,4 +1164,5 @@
     </script>
 
 </body>
+
 </html>
