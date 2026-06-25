@@ -1,7 +1,0 @@
-{
-    "title": "Grading System",
-    "shortDesc": "Enables creation of subjects, students, and grading per student.",
-    "longDesc": "Enables creation of subjects, students, and grading per student. Built with C# and MongoDB for efficient data management.\n\nFeatures:\n• Subject management (add, edit, delete)\n• Student enrollment and records\n• Grade entry with automatic computation\n• Report generation (PDF/Excel)\n• User authentication with role-based access\n• Audit trail for all changes",
-    "tech": ["C#", "MongoDB"],
-    "github": "https://github.com/aldristh456034/grading-system"
-}

@@ -1,7 +1,0 @@
-{
-    "title": "Guess the Gibberish",
-    "shortDesc": "Guess IT-related words from invented gibberish across multiple difficulty levels.",
-    "longDesc": "Guess IT-related words from invented gibberish across multiple difficulty levels. Built with Java for Android Studio.\n\nGame Features:\n• Multiple difficulty levels (Easy, Medium, Hard)\n• IT-related word categories\n• Hints and timer system\n• Score tracking and high scores\n• Sound effects and animations\n• Offline play support",
-    "tech": ["Java", "Android Studio"],
-    "github": "https://github.com/aldristh456034/guess-gibberish"
-}
