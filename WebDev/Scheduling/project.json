@@ -1,7 +1,0 @@
-{
-    "title": "Class Scheduling System",
-    "shortDesc": "Room allocation & conflict detection for instructors and classrooms. Includes printing.",
-    "longDesc": "Room allocation & conflict detection for instructors and classrooms. Includes printing. Built with HTML, JavaScript, Bootstrap, Python, and SQL.\n\nFeatures:\n• Automatic detection of allocation conflicts\n• Room, instructor, and time management\n• Prevent duplication and confusion\n• Interactive calendar view\n• Printable schedules\n• Export to PDF",
-    "tech": ["HTML", "JavaScript", "Bootstrap", "Python", "SQL"],
-    "github": "https://github.com/aldristh456034/scheduling-system"
-}

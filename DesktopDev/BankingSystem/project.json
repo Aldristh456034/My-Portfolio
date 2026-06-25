@@ -1,7 +1,0 @@
-{
-    "title": "Banking System",
-    "shortDesc": "Admin & user software with OTP, facial recognition, multi-language, and account management.",
-    "longDesc": "Admin & user software with OTP, facial recognition, multi-language support, account management, and printing. Built with C#, SQLServer, and C++.\n\nKey Features:\n• Separate interfaces for Administrator and User\n• Account approval workflow\n• Transaction history with filters\n• Multi-language support (English, Filipino, Spanish)\n• Security: Email verification, OTP, Security Key, Facial Recognition\n• Account management with deactivation\n• Printable transaction summaries",
-    "tech": ["C#", "SQLServer", "C++"],
-    "github": "https://github.com/aldristh456034/banking-system"
-}
