@@ -43,6 +43,10 @@ body {
     0% { opacity: 0; transform: translateY(28px); }
     100% { opacity: 1; transform: translateY(0); }
 }
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
 .animate-in {
     animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
     opacity: 0;
@@ -201,6 +205,69 @@ header {
     gap: 28px;
     margin-bottom: 24px;
 }
+
+/* ----- SKELETON LOADING ----- */
+.skeleton-card {
+    padding: 24px 22px 22px;
+    border-radius: 28px;
+    background: rgba(22, 28, 36, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    flex-direction: column;
+    animation: fadeSlideUp 0.6s ease forwards;
+    opacity: 0;
+}
+.skeleton-card .skeleton-img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 18px;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, #1a2330 25%, #2a3a4a 50%, #1a2330 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+}
+.skeleton-card .skeleton-title {
+    height: 24px;
+    width: 70%;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #1a2330 25%, #2a3a4a 50%, #1a2330 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+}
+.skeleton-card .skeleton-desc {
+    height: 16px;
+    width: 90%;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, #1a2330 25%, #2a3a4a 50%, #1a2330 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+}
+.skeleton-card .skeleton-desc.short {
+    width: 60%;
+}
+.skeleton-card .skeleton-meta {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.skeleton-card .skeleton-tech {
+    height: 28px;
+    width: 60px;
+    border-radius: 40px;
+    background: linear-gradient(90deg, #1a2330 25%, #2a3a4a 50%, #1a2330 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+}
+.skeleton-card .skeleton-tech.wide {
+    width: 80px;
+}
+
+/* ----- REAL PROJECT CARD ----- */
 .project-card {
     padding: 24px 22px 22px;
     border-radius: 28px;
@@ -208,6 +275,8 @@ header {
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    opacity: 0;
+    animation: fadeSlideUp 0.6s ease forwards;
 }
 .project-card .preview-img {
     width: 100%;
@@ -277,6 +346,27 @@ header {
     flex-wrap: wrap;
     gap: 6px;
     flex: 1;
+}
+
+/* ----- Loading state for images inside cards ----- */
+.project-card .preview-img.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a2330;
+}
+.project-card .preview-img.loading::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid #2a3a4a;
+    border-top: 3px solid #4d7ed9;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @media (max-width: 1024px) {
@@ -471,7 +561,7 @@ header {
     border-color: #5b84c7;
 }
 
-/* ----- CONTACT - Centered ----- */
+/* ----- CONTACT ----- */
 .contact-section {
     margin: 56px 0 40px;
     padding: 32px 32px 28px;

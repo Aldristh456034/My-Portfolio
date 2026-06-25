@@ -1,17 +1,167 @@
 // ================================================================
 // MODAL FUNCTIONALITY - Reads data from HTML attributes
-// No data array needed - all data is in the HTML!
+// With Skeleton Loading Support
 // ================================================================
 
 (function() {
     // Wait for DOM to be fully loaded
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initModal);
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-        initModal();
+        init();
     }
 
-    function initModal() {
+    function init() {
+        console.log('🚀 Portfolio loading with skeletons...');
+        
+        // Show skeletons immediately
+        renderSkeletons();
+        
+        // Then load real cards
+        loadAllCards();
+        
+        // Setup modal after everything loads
+        setupModal();
+    }
+
+    // ----- Render skeleton cards -----
+    function renderSkeletons() {
+        const categories = {
+            'desktop-grid': 5,
+            'web-grid': 1,
+            'game-grid': 1,
+            'android-grid': 1,
+            'graphics-grid': 3
+        };
+
+        Object.keys(categories).forEach(gridId => {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            
+            // Clear grid
+            grid.innerHTML = '';
+            
+            // Add skeleton cards
+            const count = categories[gridId];
+            for (let i = 0; i < count; i++) {
+                const skeleton = createSkeletonCard();
+                grid.appendChild(skeleton);
+            }
+        });
+    }
+
+    // ----- Create a skeleton card -----
+    function createSkeletonCard() {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'skeleton-card';
+        skeleton.innerHTML = `
+            <div class="skeleton-img"></div>
+            <div class="skeleton-title"></div>
+            <div class="skeleton-desc"></div>
+            <div class="skeleton-desc short"></div>
+            <div class="skeleton-meta">
+                <div class="skeleton-tech"></div>
+                <div class="skeleton-tech wide"></div>
+                <div class="skeleton-tech"></div>
+            </div>
+        `;
+        return skeleton;
+    }
+
+    // ----- Load all real cards -----
+    function loadAllCards() {
+        const projectCards = document.querySelectorAll('.project-card');
+        let loadedCount = 0;
+        const totalCards = projectCards.length;
+
+        if (totalCards === 0) {
+            console.warn('No project cards found in HTML');
+            return;
+        }
+
+        console.log(`Found ${totalCards} project cards to load`);
+
+        projectCards.forEach((card, index) => {
+            // Get the image element
+            const img = card.querySelector('.preview-img img');
+            if (!img) {
+                // If no image, show card immediately
+                card.style.opacity = '1';
+                loadedCount++;
+                if (loadedCount === totalCards) {
+                    console.log('✅ All cards loaded!');
+                }
+                return;
+            }
+
+            // Add loading class
+            const previewDiv = card.querySelector('.preview-img');
+            previewDiv.classList.add('loading');
+
+            // Check if image is already loaded
+            if (img.complete && img.naturalHeight !== 0) {
+                // Image already loaded
+                previewDiv.classList.remove('loading');
+                card.style.opacity = '1';
+                loadedCount++;
+                if (loadedCount === totalCards) {
+                    console.log('✅ All cards loaded!');
+                }
+                return;
+            }
+
+            // Wait for image to load
+            img.addEventListener('load', function() {
+                previewDiv.classList.remove('loading');
+                card.style.opacity = '1';
+                loadedCount++;
+                if (loadedCount === totalCards) {
+                    console.log('✅ All cards loaded!');
+                }
+            });
+
+            img.addEventListener('error', function() {
+                // If image fails, still show the card
+                previewDiv.classList.remove('loading');
+                previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${card.dataset.title || 'Project'}</span>`;
+                card.style.opacity = '1';
+                loadedCount++;
+                if (loadedCount === totalCards) {
+                    console.log('✅ All cards loaded (some with errors)!');
+                }
+            });
+
+            // Fallback timeout - if image takes too long, show card anyway
+            setTimeout(() => {
+                if (previewDiv.classList.contains('loading')) {
+                    previewDiv.classList.remove('loading');
+                    if (!img.src || img.src === '') {
+                        previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${card.dataset.title || 'Project'}</span>`;
+                    }
+                    card.style.opacity = '1';
+                    loadedCount++;
+                    if (loadedCount === totalCards) {
+                        console.log('✅ All cards loaded (timeout fallback)!');
+                    }
+                }
+            }, 5000);
+        });
+
+        // Safety timeout - if some cards never trigger load/error
+        setTimeout(() => {
+            document.querySelectorAll('.project-card').forEach(card => {
+                if (card.style.opacity !== '1') {
+                    card.style.opacity = '1';
+                    const previewDiv = card.querySelector('.preview-img');
+                    if (previewDiv) previewDiv.classList.remove('loading');
+                }
+            });
+            console.log('✅ All cards forced visible');
+        }, 8000);
+    }
+
+    // ----- Setup Modal -----
+    function setupModal() {
         const modalOverlay = document.getElementById('projectModal');
         const modalContent = document.getElementById('modalContent');
         const modalTitle = document.getElementById('modalTitle');
@@ -31,7 +181,6 @@
         // ----- Get all images from a project folder -----
         function getProjectImages(folder) {
             const images = [];
-            // Try to load preview1.png, preview2.png, etc.
             for (let i = 1; i <= 20; i++) {
                 images.push(folder + 'preview' + i + '.png');
             }
@@ -77,7 +226,6 @@
                 img.src = url;
             });
 
-            // Fallback timeout
             setTimeout(() => {
                 if (checked < total) {
                     callback(existing.length > 0 ? existing : []);
@@ -94,7 +242,6 @@
             const longDesc = card.dataset.longdesc || 'No description available.';
             const github = card.dataset.github || '#';
 
-            // Get folder path from the first image src
             const imgElement = card.querySelector('.preview-img img');
             let folder = '';
             if (imgElement) {
@@ -103,7 +250,6 @@
                 folder = src.substring(0, lastSlash + 1);
             }
 
-            // Get images from folder and detect which exist
             const allImages = getProjectImages(folder);
             
             modalTitle.textContent = title;
@@ -112,7 +258,6 @@
 
             modalContent.scrollTop = 0;
             
-            // Show loading state
             modalPlaceholder.style.display = 'flex';
             modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>loading...</span>`;
             modalImg.style.display = 'none';
@@ -120,7 +265,6 @@
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            // Detect existing images
             detectExistingImages(allImages, (existing) => {
                 currentImages = existing;
                 totalImages = currentImages.length;
@@ -144,7 +288,6 @@
                 return;
             }
             
-            // Loop back to 0 if index goes beyond total - 1
             const safeIndex = index % totalImages;
             const url = currentImages[safeIndex];
             
@@ -179,7 +322,6 @@
         function closeModal() {
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
-            // Reset to prevent showing stale data
             currentImages = [];
             totalImages = 0;
             currentImageIndex = 0;
@@ -188,7 +330,6 @@
         // ----- Event listeners for cards -----
         document.querySelectorAll('.project-card').forEach(card => {
             card.addEventListener('click', function(e) {
-                // Don't trigger if clicking on a link inside
                 if (e.target.closest('a')) return;
                 openModal(this);
             });
@@ -221,6 +362,6 @@
             if (e.key === 'ArrowLeft') prevImage();
         });
 
-        console.log('🚀 Portfolio modal loaded!');
+        console.log('✅ Modal ready!');
     }
 })();
