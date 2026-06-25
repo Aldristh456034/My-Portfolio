@@ -43,10 +43,6 @@ body {
     0% { opacity: 0; transform: translateY(28px); }
     100% { opacity: 1; transform: translateY(0); }
 }
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
 .animate-in {
     animation: fadeSlideUp 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
     opacity: 0;
@@ -296,67 +292,6 @@ header {
     .nav-links { gap: 14px; font-size: 0.85rem; flex-wrap: wrap; }
 }
 
-/* ===== SKELETON LOADING WIREFRAME ===== */
-.skeleton-card {
-    padding: 24px 22px 22px;
-    border-radius: 28px;
-    background: rgba(22, 28, 36, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    display: flex;
-    flex-direction: column;
-    animation: fadeSlideUp 0.6s ease forwards;
-    opacity: 0;
-}
-.skeleton-card .skeleton-img {
-    width: 100%;
-    aspect-ratio: 16/9;
-    border-radius: 18px;
-    margin-bottom: 16px;
-    background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-}
-.skeleton-card .skeleton-title {
-    height: 24px;
-    width: 70%;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-}
-.skeleton-card .skeleton-desc {
-    height: 16px;
-    width: 90%;
-    border-radius: 4px;
-    margin-bottom: 6px;
-    background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-}
-.skeleton-card .skeleton-desc.short {
-    width: 60%;
-}
-.skeleton-card .skeleton-meta {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255,255,255,0.04);
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.skeleton-card .skeleton-tech {
-    height: 28px;
-    width: 60px;
-    border-radius: 40px;
-    background: linear-gradient(90deg, #1a2330 25%, #25303f 50%, #1a2330 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-}
-.skeleton-card .skeleton-tech.wide {
-    width: 80px;
-}
-
 /* ----- MODAL ----- */
 .modal-overlay {
     position: fixed;
@@ -536,7 +471,7 @@ header {
     border-color: #5b84c7;
 }
 
-/* ----- CONTACT ----- */
+/* ----- CONTACT - Centered ----- */
 .contact-section {
     margin: 56px 0 40px;
     padding: 32px 32px 28px;
@@ -545,9 +480,9 @@ header {
     backdrop-filter: blur(6px);
     border: 1px solid #293848;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 16px;
 }
 .contact-section .info {
@@ -555,6 +490,7 @@ header {
     flex-wrap: wrap;
     gap: 20px 32px;
     align-items: center;
+    justify-content: center;
 }
 .contact-section .info a {
     color: #b8d0f0;
@@ -572,24 +508,20 @@ header {
     background: #1f3147;
     color: #e2edff;
 }
-.contact-section .info .material-icons-round {
-    font-size: 1.4rem;
-    color: #7ba2f0;
+.contact-section .info .contact-icon {
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
+    fill: #7ba2f0;
+    display: inline-block;
 }
-.contact-section .badge-status {
-    background: #1a283b;
-    padding: 6px 18px;
-    border-radius: 60px;
-    font-size: 0.9rem;
-    white-space: nowrap;
+.contact-section .info a:hover .contact-icon {
+    fill: #b8d0f0;
 }
 
 @media (max-width: 768px) {
     .contact-section {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 16px;
+        padding: 24px 20px 20px;
     }
     .contact-section .info {
         gap: 12px 16px;
@@ -597,9 +529,7 @@ header {
     .contact-section .info a {
         white-space: normal;
         word-break: break-all;
-    }
-    .contact-section .badge-status {
-        text-align: center;
+        justify-content: center;
     }
 }
 
