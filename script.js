@@ -1,5 +1,6 @@
 // ================================================================
 // MODAL FUNCTIONALITY + PER-CARD SKELETON LOADING
+// FIXED: Proper image ordering based on numbering
 // ================================================================
 
 (function() {
@@ -173,16 +174,20 @@
         let currentImages = [];
         let totalImages = 0;
 
-        // ----- Get all images from a project folder -----
+        // ----- Get all images from a project folder - IN ORDER -----
         function getProjectImages(folder) {
             const images = [];
+            // Check up to 20 images IN ORDER
             for (let i = 1; i <= 20; i++) {
-                images.push(folder + 'preview' + i + '.png');
+                images.push({
+                    index: i,
+                    url: folder + 'preview' + i + '.png'
+                });
             }
             return images;
         }
 
-        // ----- Detect which images actually exist -----
+        // ----- Detect which images actually exist - PRESERVING ORDER -----
         function detectExistingImages(images, callback) {
             const existing = [];
             let checked = 0;
@@ -193,37 +198,49 @@
                 return;
             }
 
-            images.forEach((url, index) => {
+            // Check each image in order
+            images.forEach((imgData, index) => {
                 const img = new Image();
                 const timeout = setTimeout(() => {
                     img.src = '';
                     checked++;
                     if (checked === total) {
-                        callback(existing);
+                        // Sort existing images by index to maintain order
+                        existing.sort((a, b) => a.index - b.index);
+                        callback(existing.map(item => item.url));
                     }
                 }, 500);
 
                 img.onload = function() {
                     clearTimeout(timeout);
-                    existing.push(url);
+                    existing.push({
+                        index: imgData.index,
+                        url: imgData.url
+                    });
                     checked++;
                     if (checked === total) {
-                        callback(existing);
+                        // Sort existing images by index to maintain order
+                        existing.sort((a, b) => a.index - b.index);
+                        callback(existing.map(item => item.url));
                     }
                 };
                 img.onerror = function() {
                     clearTimeout(timeout);
                     checked++;
                     if (checked === total) {
-                        callback(existing);
+                        // Sort existing images by index to maintain order
+                        existing.sort((a, b) => a.index - b.index);
+                        callback(existing.map(item => item.url));
                     }
                 };
-                img.src = url;
+                img.src = imgData.url;
             });
 
+            // Fallback timeout
             setTimeout(() => {
                 if (checked < total) {
-                    callback(existing.length > 0 ? existing : []);
+                    existing.sort((a, b) => a.index - b.index);
+                    callback(existing.length > 0 ? existing.map(item => item.url) : []);
                 }
             }, 3000);
         }
@@ -283,6 +300,7 @@
                 return;
             }
             
+            // Loop back to 0 if index goes beyond total - 1
             const safeIndex = index % totalImages;
             const url = currentImages[safeIndex];
             
