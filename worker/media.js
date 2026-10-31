@@ -1,7 +1,7 @@
 const folders = new Set([
     'ProfileImg/', 'DesktopDev/GradingSystem/', 'DesktopDev/BankingSystem/',
     'DesktopDev/POS/', 'DesktopDev/Tabulation/', 'DesktopDev/Payroll/',
-    'DesktopDev/DTR/', 'WebDev/Scheduling/', 'GameDev/Karting/',
+    'DesktopDev/DTR/', 'WebDev/Scheduling/', 'WebDev/HelpSystem/', 'GameDev/Karting/',
     'AndroidDev/Gibberish/', 'GraphicsDesign/Malabago/',
     'GraphicsDesign/Council/', 'GraphicsDesign/Arise/'
 ]);
