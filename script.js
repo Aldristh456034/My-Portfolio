@@ -1,4 +1,20 @@
 // ================================================================
+// CLOUDFLARE R2 CONFIG
+// Put your PUBLIC bucket URL here (no trailing slash).
+//   - r2.dev URL:  https://pub-xxxxxxxxxxxxxxxx.r2.dev
+//   - or custom domain: https://cdn.yourdomain.com
+// NOTE: the "...r2.cloudflarestorage.com" URL is the private S3 API
+// endpoint and cannot be used by browsers.
+// Bucket layout must mirror your old folders, e.g.
+//   ProfileImg/preview1.png, DesktopDev/GradingSystem/preview1.png ...
+// ================================================================
+const R2_BASE_URL = 'https://pub-REPLACE_WITH_YOUR_ID.r2.dev';
+
+function r2Url(path) {
+    return R2_BASE_URL.replace(/\/+$/, '') + '/' + String(path).replace(/^\/+/, '');
+}
+
+// ================================================================
 // MODAL FUNCTIONALITY + PER-CARD SKELETON LOADING
 // FIXED: Proper image ordering based on numbering
 // ================================================================
@@ -14,6 +30,11 @@
     function init() {
         console.log('🚀 Portfolio loading with per-card skeletons...');
         
+        // Point every image at the Cloudflare R2 bucket
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            img.src = r2Url(img.dataset.src);
+        });
+
         // Show all cards in skeleton mode initially
         enableSkeletonMode();
         
@@ -209,7 +230,7 @@
                         existing.sort((a, b) => a.index - b.index);
                         callback(existing.map(item => item.url));
                     }
-                }, 500);
+                }, 5000);
 
                 img.onload = function() {
                     clearTimeout(timeout);
@@ -242,7 +263,7 @@
                     existing.sort((a, b) => a.index - b.index);
                     callback(existing.length > 0 ? existing.map(item => item.url) : []);
                 }
-            }, 3000);
+            }, 8000);
         }
 
         // ----- Open modal with card data -----
