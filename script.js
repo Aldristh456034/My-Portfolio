@@ -1,17 +1,35 @@
 // ================================================================
 // CLOUDFLARE R2 CONFIG
-// Put your PUBLIC bucket URL here (no trailing slash).
-//   - r2.dev URL:  https://pub-xxxxxxxxxxxxxxxx.r2.dev
-//   - or custom domain: https://cdn.yourdomain.com
-// NOTE: the "...r2.cloudflarestorage.com" URL is the private S3 API
-// endpoint and cannot be used by browsers.
-// Bucket layout must mirror your old folders, e.g.
-//   ProfileImg/preview1.png, DesktopDev/GradingSystem/preview1.png ...
+// Deployed Worker reads the my-portfolio bucket through an R2 binding.
+// /images/<key> serves images; /api/images?prefix=<folder> lists real keys.
+// No Cloudflare credentials or local image folders are used in the browser.
 // ================================================================
-const R2_BASE_URL = 'https://pub-58e87289ad914ce39759b2c263b6febb.r2.dev';
+const R2_API_URL = 'https://portfolio-r2-media.trinidadaldrich328.workers.dev';
+const R2_BASE_URL = R2_API_URL + '/images';
+const projectImageCache = new Map();
 
 function r2Url(path) {
-    return R2_BASE_URL.replace(/\/+$/, '') + '/' + String(path).replace(/^\/+/, '');
+    const key = String(path).replace(/^\/+/, '');
+    return R2_BASE_URL + '/' + key.split('/').map(encodeURIComponent).join('/');
+}
+
+async function getR2ProjectImages(folder) {
+    if (!folder) return [];
+    if (!projectImageCache.has(folder)) {
+        const request = fetch(R2_API_URL + '/api/images?prefix=' + encodeURIComponent(folder), {
+            signal: AbortSignal.timeout(15000)
+        }).then(async response => {
+            if (!response.ok) throw new Error('R2 folder request failed: ' + response.status);
+            const data = await response.json();
+            if (!Array.isArray(data.images)) throw new Error('Invalid R2 image listing');
+            return data.images.map(r2Url);
+        }).catch(error => {
+            projectImageCache.delete(folder);
+            throw error;
+        });
+        projectImageCache.set(folder, request);
+    }
+    return projectImageCache.get(folder);
 }
 
 // ================================================================
@@ -30,9 +48,10 @@ function r2Url(path) {
     function init() {
         console.log('🚀 Portfolio loading with per-card skeletons...');
         
-        // Point every image at the Cloudflare R2 bucket
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            img.src = r2Url(img.dataset.src);
+        // Keep the R2 folder on the card even if a preview fails to load.
+        document.querySelectorAll('.project-card').forEach(card => {
+            const key = card.querySelector('img[data-src]')?.dataset.src;
+            if (key) card.dataset.folder = key.slice(0, key.lastIndexOf('/') + 1);
         });
 
         // Show all cards in skeleton mode initially
@@ -43,6 +62,11 @@ function r2Url(path) {
         
         // Setup modal
         setupModal();
+
+        // Attach load/error handlers before starting network requests.
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            img.src = r2Url(img.dataset.src);
+        });
     }
 
     // ----- Enable skeleton mode on all cards -----
@@ -89,7 +113,7 @@ function r2Url(path) {
             }
 
             // Check if image is already loaded
-            if (img.complete && img.naturalHeight !== 0) {
+            if (img.getAttribute('src') && img.complete && img.naturalHeight !== 0) {
                 // Image already loaded
                 card.classList.remove('skeleton-mode');
                 if (previewDiv) {
@@ -103,6 +127,15 @@ function r2Url(path) {
                 return;
             }
 
+            // Settle only once, including when a timed-out image loads later.
+            let settled = false;
+            const settle = () => {
+                if (settled) return;
+                settled = true;
+                loadedCount++;
+                checkAllLoaded(loadedCount, totalCards);
+            };
+
             // Set up load event
             img.addEventListener('load', function() {
                 card.classList.remove('skeleton-mode');
@@ -111,9 +144,8 @@ function r2Url(path) {
                     previewDiv.classList.add('loaded');
                 }
                 card.classList.add('loaded');
-                loadedCount++;
+                settle();
                 console.log(`✅ Card ${index + 1} loaded: ${card.dataset.title || 'Project'}`);
-                checkAllLoaded(loadedCount, totalCards);
             });
 
             // Set up error event
@@ -127,9 +159,8 @@ function r2Url(path) {
                     previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${card.dataset.title || 'Project'}</span>`;
                 }
                 card.classList.add('loaded');
-                loadedCount++;
+                settle();
                 console.warn(`⚠️ Card ${index + 1} failed: ${card.dataset.title || 'Project'}`);
-                checkAllLoaded(loadedCount, totalCards);
             });
 
             // Fallback timeout - if image takes too long, show card anyway
@@ -139,15 +170,11 @@ function r2Url(path) {
                     if (previewDiv) {
                         previewDiv.classList.remove('skeleton');
                         previewDiv.classList.add('loaded');
-                        // If image hasn't loaded, show placeholder
-                        if (!img.src || img.src === '' || !img.complete) {
-                            previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${card.dataset.title || 'Project'}</span>`;
-                        }
+                        // Keep the pending image so slower R2 downloads can finish.
                     }
                     card.classList.add('loaded');
-                    loadedCount++;
+                    settle();
                     console.log(`⏱️ Card ${index + 1} loaded (timeout): ${card.dataset.title || 'Project'}`);
-                    checkAllLoaded(loadedCount, totalCards);
                 }
             }, 6000);
         });
@@ -160,10 +187,7 @@ function r2Url(path) {
                 if (previewDiv) {
                     previewDiv.classList.remove('skeleton');
                     previewDiv.classList.add('loaded');
-                    const img = previewDiv.querySelector('img');
-                    if (!img || !img.complete || img.naturalHeight === 0) {
-                        previewDiv.innerHTML = `<i class="material-icons-round" style="font-size:2.2rem; opacity:0.7;">image</i> <span>${card.dataset.title || 'Project'}</span>`;
-                    }
+                    // Do not remove pending images from the DOM.
                 }
                 card.classList.add('loaded');
             });
@@ -194,96 +218,23 @@ function r2Url(path) {
         let currentImageIndex = 0;
         let currentImages = [];
         let totalImages = 0;
-
-        // ----- Get all images from a project folder - IN ORDER -----
-        function getProjectImages(folder) {
-            const images = [];
-            // Check up to 20 images IN ORDER
-            for (let i = 1; i <= 20; i++) {
-                images.push({
-                    index: i,
-                    url: folder + 'preview' + i + '.png'
-                });
-            }
-            return images;
-        }
-
-        // ----- Detect which images actually exist - PRESERVING ORDER -----
-        function detectExistingImages(images, callback) {
-            const existing = [];
-            let checked = 0;
-            const total = images.length;
-
-            if (total === 0) {
-                callback([]);
-                return;
-            }
-
-            // Check each image in order
-            images.forEach((imgData, index) => {
-                const img = new Image();
-                const timeout = setTimeout(() => {
-                    img.src = '';
-                    checked++;
-                    if (checked === total) {
-                        // Sort existing images by index to maintain order
-                        existing.sort((a, b) => a.index - b.index);
-                        callback(existing.map(item => item.url));
-                    }
-                }, 5000);
-
-                img.onload = function() {
-                    clearTimeout(timeout);
-                    existing.push({
-                        index: imgData.index,
-                        url: imgData.url
-                    });
-                    checked++;
-                    if (checked === total) {
-                        // Sort existing images by index to maintain order
-                        existing.sort((a, b) => a.index - b.index);
-                        callback(existing.map(item => item.url));
-                    }
-                };
-                img.onerror = function() {
-                    clearTimeout(timeout);
-                    checked++;
-                    if (checked === total) {
-                        // Sort existing images by index to maintain order
-                        existing.sort((a, b) => a.index - b.index);
-                        callback(existing.map(item => item.url));
-                    }
-                };
-                img.src = imgData.url;
-            });
-
-            // Fallback timeout
-            setTimeout(() => {
-                if (checked < total) {
-                    existing.sort((a, b) => a.index - b.index);
-                    callback(existing.length > 0 ? existing.map(item => item.url) : []);
-                }
-            }, 8000);
-        }
+        let modalRequestId = 0;
 
         // ----- Open modal with card data -----
-        function openModal(card) {
+        async function openModal(card) {
+            const requestId = ++modalRequestId;
             currentCard = card;
             currentImageIndex = 0;
+            currentImages = [];
+            totalImages = 0;
+            prevBtn.disabled = true;
+            nextBtn.disabled = true;
 
             const title = card.dataset.title || 'Project';
             const longDesc = card.dataset.longdesc || 'No description available.';
             const github = card.dataset.github || '#';
 
-            const imgElement = card.querySelector('.preview-img img');
-            let folder = '';
-            if (imgElement) {
-                const src = imgElement.src;
-                const lastSlash = src.lastIndexOf('/');
-                folder = src.substring(0, lastSlash + 1);
-            }
-
-            const allImages = getProjectImages(folder);
+            const folder = card.dataset.folder || '';
             
             modalTitle.textContent = title;
             modalDesc.innerHTML = `<strong>Description:</strong>\n${longDesc}`;
@@ -298,9 +249,13 @@ function r2Url(path) {
             modalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            detectExistingImages(allImages, (existing) => {
+            try {
+                const existing = await getR2ProjectImages(folder);
+                if (requestId !== modalRequestId) return;
                 currentImages = existing;
                 totalImages = currentImages.length;
+                prevBtn.disabled = totalImages < 2;
+                nextBtn.disabled = totalImages < 2;
                 
                 if (totalImages === 0) {
                     modalImg.style.display = 'none';
@@ -310,7 +265,13 @@ function r2Url(path) {
                 }
                 
                 showImage(0);
-            });
+            } catch (error) {
+                if (requestId !== modalRequestId) return;
+                console.error('Unable to load R2 project:', error);
+                modalImg.style.display = 'none';
+                modalPlaceholder.style.display = 'flex';
+                modalPlaceholder.textContent = 'Unable to load R2 images. Close and reopen to retry.';
+            }
         }
 
         function showImage(index) {
@@ -326,14 +287,19 @@ function r2Url(path) {
             const url = currentImages[safeIndex];
             
             if (url) {
-                modalImg.src = url;
-                modalImg.style.display = 'block';
-                modalPlaceholder.style.display = 'none';
+                modalImg.style.display = 'none';
+                modalPlaceholder.style.display = 'flex';
+                modalPlaceholder.textContent = 'Loading image...';
+                modalImg.onload = function() {
+                    modalImg.style.display = 'block';
+                    modalPlaceholder.style.display = 'none';
+                };
                 modalImg.onerror = function() {
                     modalImg.style.display = 'none';
                     modalPlaceholder.style.display = 'flex';
                     modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>image not found</span>`;
                 };
+                modalImg.src = url;
             } else {
                 modalImg.style.display = 'none';
                 modalPlaceholder.style.display = 'flex';
@@ -354,6 +320,10 @@ function r2Url(path) {
         }
 
         function closeModal() {
+            modalRequestId++;
+            modalImg.onload = null;
+            modalImg.onerror = null;
+            modalImg.removeAttribute('src');
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
             currentImages = [];

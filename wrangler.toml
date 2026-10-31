@@ -1,0 +1,9 @@
+name = "portfolio-r2-media"
+main = "worker/media.js"
+compatibility_date = "2026-10-01"
+account_id = "7b43a2e2ec329d23eb16b65cfdc9ec8e"
+workers_dev = true
+
+[[r2_buckets]]
+binding = "PORTFOLIO_IMAGES"
+bucket_name = "my-portfolio"
