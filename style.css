@@ -503,17 +503,8 @@ header {
     object-fit: contain;
     display: block;
     background: #0b111a;
-    transform-origin: 50% 50%;
-    transition: transform 0.25s ease;
     user-select: none;
     -webkit-user-drag: none;
-}
-.modal-gallery.zoomed img {
-    transform: scale(2);
-    cursor: zoom-out;
-}
-.modal-gallery.zoomed.panning img {
-    transition: none;
 }
 .modal-gallery .placeholder-img {
     position: absolute;
@@ -535,8 +526,7 @@ header {
     gap: 8px;
     z-index: 5;
 }
-.gallery-btn,
-.gallery-arrow {
+.gallery-btn {
     background: rgba(20, 27, 36, 0.45);
     border: 1px solid rgba(198, 220, 255, 0.25);
     color: #e3eeff;
@@ -555,32 +545,89 @@ header {
 }
 .gallery-btn:hover,
 .gallery-btn:focus-visible,
-.gallery-btn[aria-pressed="true"],
-.gallery-arrow:hover,
-.gallery-arrow:focus-visible {
+.gallery-btn.is-active {
     opacity: 1;
     background: rgba(77, 126, 217, 0.85);
     border-color: #9dbcf5;
 }
-.gallery-arrow {
+
+/* ----- IMAGE VIEWER POPUP (not browser fullscreen) ----- */
+.viewer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display: none;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 4vh 4vw;
 }
-.gallery-arrow.prev { left: 16px; }
-.gallery-arrow.next { right: 16px; }
-.modal-gallery:fullscreen {
-    width: 100vw;
-    height: 100vh;
-    max-height: none;
-    aspect-ratio: auto;
-    border-radius: 0;
-    margin: 0;
-}
-.modal-gallery:fullscreen .gallery-arrow {
+.viewer-overlay.active {
     display: flex;
+}
+.viewer-box {
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    height: 100%;
+    max-height: 86vh;
+    background: #0b111a;
+    border: 1px solid #2c3d53;
+    border-radius: 24px;
+    box-shadow: 0 40px 80px #000000cc;
+    overflow: hidden;
+}
+.viewer-stage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: zoom-in;
+    touch-action: none;
+}
+.viewer-stage.zoomed {
+    cursor: grab;
+}
+.viewer-stage.dragging {
+    cursor: grabbing;
+}
+.viewer-stage img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 0.2s ease;
+    will-change: transform;
+}
+.viewer-stage.dragging img {
+    transition: none;
+}
+.viewer-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(198, 220, 255, 0.3);
+    background: rgba(20, 27, 36, 0.6);
+    color: #e3eeff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.viewer-close:hover,
+.viewer-close:focus-visible {
+    background: rgba(77, 126, 217, 0.9);
 }
 .modal-nav {
     display: flex;

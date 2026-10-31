@@ -437,6 +437,16 @@ Design Features:
         </div>
     </div>
 
+    <!-- ===== IMAGE VIEWER POPUP ===== -->
+    <div class="viewer-overlay" id="imageViewer" aria-hidden="true">
+        <div class="viewer-box" role="dialog" aria-label="Image viewer">
+            <button type="button" class="viewer-close" id="viewerClose" aria-label="Close"><span class="material-icons-round">close</span></button>
+            <div class="viewer-stage" id="viewerStage">
+                <img id="viewerImage" alt="project preview" draggable="false" />
+            </div>
+        </div>
+    </div>
+
     <!-- ===== MODAL ===== -->
     <div class="modal-overlay" id="projectModal">
         <div class="modal-box">
@@ -452,11 +462,10 @@ Design Features:
                     </div>
                     <img id="modalImage" style="display:none;" alt="project preview" />
                     <div class="gallery-tools">
-                        <button type="button" class="gallery-btn" id="galleryZoom" aria-pressed="false" aria-label="Zoom image" title="Zoom"><span class="material-icons-round">zoom_in</span></button>
-                        <button type="button" class="gallery-btn" id="galleryExpand" aria-pressed="false" aria-label="Expand view" title="Expand"><span class="material-icons-round">open_in_full</span></button>
+                        <button type="button" class="gallery-btn" id="galleryZoomIn" aria-label="Zoom in" title="Zoom in"><span class="material-icons-round">zoom_in</span></button>
+                        <button type="button" class="gallery-btn" id="galleryZoomOut" aria-label="Zoom out" title="Zoom out"><span class="material-icons-round">zoom_out</span></button>
+                        <button type="button" class="gallery-btn" id="galleryExpand" aria-label="Expand view" title="Expand"><span class="material-icons-round">open_in_full</span></button>
                     </div>
-                    <button type="button" class="gallery-arrow prev" id="galleryPrev" aria-label="Previous image"><span class="material-icons-round">chevron_left</span></button>
-                    <button type="button" class="gallery-arrow next" id="galleryNext" aria-label="Next image"><span class="material-icons-round">chevron_right</span></button>
                 </div>
                 <div class="modal-nav">
                     <button id="modalPrev"><span class="material-icons-round">chevron_left</span> Prev</button>

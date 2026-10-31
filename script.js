@@ -214,10 +214,21 @@ async function getR2ProjectImages(folder) {
         const nextBtn = document.getElementById('modalNext');
         const closeBtn = document.getElementById('modalCloseBtn');
         const gallery = document.getElementById('modalGallery');
-        const zoomBtn = document.getElementById('galleryZoom');
+        const zoomInBtn = document.getElementById('galleryZoomIn');
+        const zoomOutBtn = document.getElementById('galleryZoomOut');
         const expandBtn = document.getElementById('galleryExpand');
-        const galleryPrev = document.getElementById('galleryPrev');
-        const galleryNext = document.getElementById('galleryNext');
+        const viewer = document.getElementById('imageViewer');
+        const viewerStage = document.getElementById('viewerStage');
+        const viewerImg = document.getElementById('viewerImage');
+        const viewerClose = document.getElementById('viewerClose');
+
+        const VIEW_MIN = 1;
+        const VIEW_MAX = 5;
+        const VIEW_CLICK_ZOOM = 2.5;
+        let viewScale = 1;
+        let viewX = 0;
+        let viewY = 0;
+        let activeToolBtn = null;
 
         let imageToken = 0;
         let currentCard = null;
@@ -293,7 +304,6 @@ async function getR2ProjectImages(folder) {
             const url = currentImages[safeIndex];
             
             if (url) {
-                setZoom(false);
                 const token = ++imageToken;
                 const hasImage = modalImg.style.display !== 'none' && modalImg.getAttribute('src');
                 if (!hasImage) {
@@ -308,6 +318,10 @@ async function getR2ProjectImages(folder) {
                     modalImg.src = url;
                     modalImg.style.display = 'block';
                     modalPlaceholder.style.display = 'none';
+                    if (viewer.classList.contains('active')) {
+                        viewerImg.src = url;
+                        resetView();
+                    }
                 };
                 loader.onerror = function() {
                     if (token !== imageToken) return;
@@ -323,28 +337,67 @@ async function getR2ProjectImages(folder) {
             }
         }
 
-        // ----- Zoom / expand -----
-        function setZoom(on) {
-            gallery.classList.toggle('zoomed', on);
-            if (!on) modalImg.style.transformOrigin = '';
-            zoomBtn.setAttribute('aria-pressed', String(on));
-            zoomBtn.querySelector('.material-icons-round').textContent = on ? 'zoom_out' : 'zoom_in';
-            zoomBtn.title = on ? 'Unzoom' : 'Zoom';
+        // ----- Image viewer popup (zoom / expand) -----
+        function applyView() {
+            viewerImg.style.transform = `translate(${viewX}px, ${viewY}px) scale(${viewScale})`;
+            viewerStage.classList.toggle('zoomed', viewScale > 1);
         }
 
-        function panZoom(e) {
-            if (!gallery.classList.contains('zoomed')) return;
-            const rect = gallery.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            modalImg.style.transformOrigin = x + '% ' + y + '%';
+        function clampPan() {
+            const maxX = Math.max(0, (viewerImg.offsetWidth * viewScale - viewerStage.clientWidth) / 2);
+            const maxY = Math.max(0, (viewerImg.offsetHeight * viewScale - viewerStage.clientHeight) / 2);
+            viewX = Math.min(maxX, Math.max(-maxX, viewX));
+            viewY = Math.min(maxY, Math.max(-maxY, viewY));
         }
 
-        function syncExpandBtn() {
-            const on = document.fullscreenElement === gallery;
-            expandBtn.setAttribute('aria-pressed', String(on));
-            expandBtn.querySelector('.material-icons-round').textContent = on ? 'close_fullscreen' : 'open_in_full';
-            expandBtn.title = on ? 'Collapse' : 'Expand';
+        function resetView() {
+            viewScale = 1;
+            viewX = 0;
+            viewY = 0;
+            applyView();
+        }
+
+        // Zoom keeping the point (px, py), relative to the stage centre, fixed.
+        function setScale(next, px, py) {
+            next = Math.min(VIEW_MAX, Math.max(VIEW_MIN, next));
+            const k = next / viewScale;
+            viewX = px - k * (px - viewX);
+            viewY = py - k * (py - viewY);
+            viewScale = next;
+            if (viewScale === 1) { viewX = 0; viewY = 0; }
+            clampPan();
+            applyView();
+        }
+
+        function stagePoint(e) {
+            const rect = viewerStage.getBoundingClientRect();
+            return { x: e.clientX - rect.left - rect.width / 2, y: e.clientY - rect.top - rect.height / 2 };
+        }
+
+        function setActiveTool(btn) {
+            if (activeToolBtn) activeToolBtn.classList.remove('is-active');
+            activeToolBtn = btn;
+            if (btn) btn.classList.add('is-active');
+        }
+
+        function openViewer(btn, startScale) {
+            const src = modalImg.getAttribute('src');
+            if (!src || modalImg.style.display === 'none') return;
+            viewerImg.src = src;
+            resetView();
+            viewer.classList.add('active');
+            viewer.setAttribute('aria-hidden', 'false');
+            setActiveTool(btn);
+            if (startScale > 1) setScale(startScale, 0, 0);
+            viewerClose.focus({ preventScroll: true });
+        }
+
+        function closeViewer() {
+            viewer.classList.remove('active');
+            viewer.setAttribute('aria-hidden', 'true');
+            viewerImg.removeAttribute('src');
+            resetView();
+            setActiveTool(null);
         }
 
         function nextImage() {
@@ -362,8 +415,7 @@ async function getR2ProjectImages(folder) {
         function closeModal() {
             modalRequestId++;
             imageToken++;
-            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-            setZoom(false);
+            closeViewer();
             modalImg.removeAttribute('src');
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
@@ -396,34 +448,71 @@ async function getR2ProjectImages(folder) {
             nextImage();
         });
         
-        zoomBtn.addEventListener('click', function(e) {
+        zoomInBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (modalImg.style.display === 'none') return;
-            setZoom(!gallery.classList.contains('zoomed'));
+            openViewer(zoomInBtn, VIEW_CLICK_ZOOM);
         });
 
-        if (gallery.requestFullscreen) {
-            expandBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (document.fullscreenElement === gallery) {
-                    document.exitFullscreen().catch(() => {});
-                } else {
-                    gallery.requestFullscreen().catch(() => {});
-                }
-            });
-            document.addEventListener('fullscreenchange', syncExpandBtn);
-        } else {
-            expandBtn.style.display = 'none';
+        zoomOutBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openViewer(zoomOutBtn, 1);
+        });
+
+        expandBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openViewer(expandBtn, 1);
+        });
+
+        viewerClose.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeViewer();
+        });
+
+        viewer.addEventListener('click', function(e) {
+            if (e.target === viewer) closeViewer();
+        });
+
+        viewerStage.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            const p = stagePoint(e);
+            setScale(viewScale * (e.deltaY < 0 ? 1.2 : 1 / 1.2), p.x, p.y);
+        }, { passive: false });
+
+        // Drag to pan when zoomed; a click without movement toggles zoom.
+        let drag = null;
+        viewerStage.addEventListener('pointerdown', function(e) {
+            if (e.button !== 0) return;
+            drag = { x: e.clientX, y: e.clientY, startX: viewX, startY: viewY, moved: false };
+            viewerStage.setPointerCapture(e.pointerId);
+        });
+        viewerStage.addEventListener('pointermove', function(e) {
+            if (!drag) return;
+            const dx = e.clientX - drag.x;
+            const dy = e.clientY - drag.y;
+            if (!drag.moved && Math.hypot(dx, dy) > 4) {
+                drag.moved = true;
+                if (viewScale > 1) viewerStage.classList.add('dragging');
+            }
+            if (drag.moved && viewScale > 1) {
+                viewX = drag.startX + dx;
+                viewY = drag.startY + dy;
+                clampPan();
+                applyView();
+            }
+        });
+        function endDrag(e) {
+            if (!drag) return;
+            const wasClick = !drag.moved && e.type === 'pointerup';
+            drag = null;
+            viewerStage.classList.remove('dragging');
+            if (wasClick) {
+                const p = stagePoint(e);
+                if (viewScale > 1) setScale(1, p.x, p.y);
+                else setScale(VIEW_CLICK_ZOOM, p.x, p.y);
+            }
         }
-
-        galleryPrev.addEventListener('click', function(e) { e.stopPropagation(); prevImage(); });
-        galleryNext.addEventListener('click', function(e) { e.stopPropagation(); nextImage(); });
-        gallery.addEventListener('mousemove', panZoom);
-        modalImg.addEventListener('click', function(e) {
-            e.stopPropagation();
-            panZoom(e);
-            setZoom(!gallery.classList.contains('zoomed'));
-        });
+        viewerStage.addEventListener('pointerup', endDrag);
+        viewerStage.addEventListener('pointercancel', endDrag);
 
         closeBtn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -436,6 +525,14 @@ async function getR2ProjectImages(folder) {
         
         document.addEventListener('keydown', function(e) {
             if (!modalOverlay.classList.contains('active')) return;
+            if (viewer.classList.contains('active')) {
+                if (e.key === 'Escape') closeViewer();
+                else if (e.key === 'ArrowRight') nextImage();
+                else if (e.key === 'ArrowLeft') prevImage();
+                else if (e.key === '+' || e.key === '=') setScale(viewScale * 1.25, 0, 0);
+                else if (e.key === '-') setScale(viewScale / 1.25, 0, 0);
+                return;
+            }
             if (e.key === 'Escape') closeModal();
             if (e.key === 'ArrowRight') nextImage();
             if (e.key === 'ArrowLeft') prevImage();
