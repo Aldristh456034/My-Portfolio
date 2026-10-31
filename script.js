@@ -221,6 +221,8 @@ async function getR2ProjectImages(folder) {
         const viewerStage = document.getElementById('viewerStage');
         const viewerImg = document.getElementById('viewerImage');
         const viewerClose = document.getElementById('viewerClose');
+        const viewerPrev = document.getElementById('viewerPrev');
+        const viewerNext = document.getElementById('viewerNext');
 
         const VIEW_MIN = 1;
         const VIEW_MAX = 5;
@@ -397,6 +399,7 @@ async function getR2ProjectImages(folder) {
             viewer.classList.add('active');
             viewer.setAttribute('aria-hidden', 'false');
             setActiveTool(expandBtn);
+            viewerPrev.hidden = viewerNext.hidden = totalImages < 2;
             viewerClose.focus({ preventScroll: true });
         }
 
@@ -533,6 +536,16 @@ async function getR2ProjectImages(folder) {
         viewerClose.addEventListener('click', function(e) {
             e.stopPropagation();
             closeViewer();
+        });
+
+        viewerPrev.addEventListener('click', function(e) {
+            e.stopPropagation();
+            prevImage();
+        });
+
+        viewerNext.addEventListener('click', function(e) {
+            e.stopPropagation();
+            nextImage();
         });
 
         viewer.addEventListener('click', function(e) {
