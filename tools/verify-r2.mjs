@@ -17,7 +17,8 @@ await Promise.all(keys.map(async key => {
         });
         const bytes = new Uint8Array(await response.arrayBuffer());
         const png = bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71;
-        const valid = response.ok && png;
+        const jpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+        const valid = response.ok && (png || jpeg);
         console.log(`${valid ? 'PASS' : 'FAIL'} ${response.status} ${bytes.length} bytes ${key}`);
         if (!valid) failed = true;
     } catch (error) {
