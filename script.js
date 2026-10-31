@@ -8,7 +8,7 @@
 // Bucket layout must mirror your old folders, e.g.
 //   ProfileImg/preview1.png, DesktopDev/GradingSystem/preview1.png ...
 // ================================================================
-const R2_BASE_URL = 'https://pub-REPLACE_WITH_YOUR_ID.r2.dev';
+const R2_BASE_URL = 'https://pub-58e87289ad914ce39759b2c263b6febb.r2.dev';
 
 function r2Url(path) {
     return R2_BASE_URL.replace(/\/+$/, '') + '/' + String(path).replace(/^\/+/, '');
