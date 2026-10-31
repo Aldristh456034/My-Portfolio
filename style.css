@@ -68,17 +68,17 @@ header {
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: #181c22;
+    border: 1px solid rgba(122, 169, 255, 0.35);
+    border-radius: 0;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     letter-spacing: -0.5px;
     color: #e8edf2;
     text-decoration: none;
-}
-.logo img {
-    height: 42px;
-    width: auto;
-    border-radius: 8px;
 }
 .logo span {
     background: linear-gradient(145deg, #b0d4ff, #7aa9ff);
