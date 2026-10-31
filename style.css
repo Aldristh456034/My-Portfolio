@@ -505,6 +505,19 @@ header {
     background: #0b111a;
     user-select: none;
     -webkit-user-drag: none;
+    transform-origin: 50% 50%;
+    transition: transform 0.2s ease;
+    will-change: transform;
+}
+.modal-gallery.zoomed {
+    cursor: grab;
+    touch-action: none;
+}
+.modal-gallery.dragging {
+    cursor: grabbing;
+}
+.modal-gallery.dragging img {
+    transition: none;
 }
 .modal-gallery .placeholder-img {
     position: absolute;

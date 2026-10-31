@@ -230,6 +230,14 @@ async function getR2ProjectImages(folder) {
         let viewY = 0;
         let activeToolBtn = null;
 
+        // Inline (same dialog) zoom state
+        const INLINE_MIN = 1;
+        const INLINE_MAX = 4;
+        const INLINE_STEP = 0.5;
+        let inlineScale = 1;
+        let inlineX = 0;
+        let inlineY = 0;
+
         let imageToken = 0;
         let currentCard = null;
         let currentImageIndex = 0;
@@ -318,6 +326,7 @@ async function getR2ProjectImages(folder) {
                     modalImg.src = url;
                     modalImg.style.display = 'block';
                     modalPlaceholder.style.display = 'none';
+                    resetInlineZoom();
                     if (viewer.classList.contains('active')) {
                         viewerImg.src = url;
                         resetView();
@@ -380,15 +389,14 @@ async function getR2ProjectImages(folder) {
             if (btn) btn.classList.add('is-active');
         }
 
-        function openViewer(btn, startScale) {
+        function openViewer() {
             const src = modalImg.getAttribute('src');
             if (!src || modalImg.style.display === 'none') return;
             viewerImg.src = src;
             resetView();
             viewer.classList.add('active');
             viewer.setAttribute('aria-hidden', 'false');
-            setActiveTool(btn);
-            if (startScale > 1) setScale(startScale, 0, 0);
+            setActiveTool(expandBtn);
             viewerClose.focus({ preventScroll: true });
         }
 
@@ -398,6 +406,42 @@ async function getR2ProjectImages(folder) {
             viewerImg.removeAttribute('src');
             resetView();
             setActiveTool(null);
+        }
+
+        // ----- Inline zoom (same dialog, no popup) -----
+        function applyInlineZoom() {
+            modalImg.style.transform = inlineScale === 1
+                ? ''
+                : `translate(${inlineX}px, ${inlineY}px) scale(${inlineScale})`;
+            gallery.classList.toggle('zoomed', inlineScale > 1);
+            zoomInBtn.classList.toggle('is-active', inlineScale > 1);
+            zoomOutBtn.classList.toggle('is-active', inlineScale > 1);
+        }
+
+        function clampInline() {
+            const maxX = (gallery.clientWidth * inlineScale - gallery.clientWidth) / 2;
+            const maxY = (gallery.clientHeight * inlineScale - gallery.clientHeight) / 2;
+            inlineX = Math.min(maxX, Math.max(-maxX, inlineX));
+            inlineY = Math.min(maxY, Math.max(-maxY, inlineY));
+        }
+
+        function resetInlineZoom() {
+            inlineScale = 1;
+            inlineX = 0;
+            inlineY = 0;
+            applyInlineZoom();
+        }
+
+        function stepInlineZoom(delta) {
+            if (modalImg.style.display === 'none') return;
+            const next = Math.min(INLINE_MAX, Math.max(INLINE_MIN, inlineScale + delta));
+            const k = next / inlineScale;
+            inlineX *= k;
+            inlineY *= k;
+            inlineScale = next;
+            if (inlineScale === 1) { inlineX = 0; inlineY = 0; }
+            clampInline();
+            applyInlineZoom();
         }
 
         function nextImage() {
@@ -416,6 +460,7 @@ async function getR2ProjectImages(folder) {
             modalRequestId++;
             imageToken++;
             closeViewer();
+            resetInlineZoom();
             modalImg.removeAttribute('src');
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
@@ -450,18 +495,40 @@ async function getR2ProjectImages(folder) {
         
         zoomInBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            openViewer(zoomInBtn, VIEW_CLICK_ZOOM);
+            stepInlineZoom(INLINE_STEP);
         });
 
         zoomOutBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            openViewer(zoomOutBtn, 1);
+            stepInlineZoom(-INLINE_STEP);
         });
 
         expandBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            openViewer(expandBtn, 1);
+            openViewer();
         });
+
+        // Drag the zoomed image to pan inside the same dialog.
+        let inlineDrag = null;
+        gallery.addEventListener('pointerdown', function(e) {
+            if (inlineScale <= 1 || e.button !== 0 || e.target.closest('.gallery-tools')) return;
+            inlineDrag = { x: e.clientX, y: e.clientY, startX: inlineX, startY: inlineY };
+            gallery.setPointerCapture(e.pointerId);
+            gallery.classList.add('dragging');
+        });
+        gallery.addEventListener('pointermove', function(e) {
+            if (!inlineDrag) return;
+            inlineX = inlineDrag.startX + (e.clientX - inlineDrag.x);
+            inlineY = inlineDrag.startY + (e.clientY - inlineDrag.y);
+            clampInline();
+            applyInlineZoom();
+        });
+        function endInlineDrag() {
+            inlineDrag = null;
+            gallery.classList.remove('dragging');
+        }
+        gallery.addEventListener('pointerup', endInlineDrag);
+        gallery.addEventListener('pointercancel', endInlineDrag);
 
         viewerClose.addEventListener('click', function(e) {
             e.stopPropagation();
