@@ -213,7 +213,13 @@ async function getR2ProjectImages(folder) {
         const prevBtn = document.getElementById('modalPrev');
         const nextBtn = document.getElementById('modalNext');
         const closeBtn = document.getElementById('modalCloseBtn');
+        const gallery = document.getElementById('modalGallery');
+        const zoomBtn = document.getElementById('galleryZoom');
+        const expandBtn = document.getElementById('galleryExpand');
+        const galleryPrev = document.getElementById('galleryPrev');
+        const galleryNext = document.getElementById('galleryNext');
 
+        let imageToken = 0;
         let currentCard = null;
         let currentImageIndex = 0;
         let currentImages = [];
@@ -287,24 +293,58 @@ async function getR2ProjectImages(folder) {
             const url = currentImages[safeIndex];
             
             if (url) {
-                modalImg.style.display = 'none';
-                modalPlaceholder.style.display = 'flex';
-                modalPlaceholder.textContent = 'Loading image...';
-                modalImg.onload = function() {
+                setZoom(false);
+                const token = ++imageToken;
+                const hasImage = modalImg.style.display !== 'none' && modalImg.getAttribute('src');
+                if (!hasImage) {
+                    modalPlaceholder.style.display = 'flex';
+                    modalPlaceholder.textContent = 'Loading image...';
+                }
+                // Preload off-screen and swap only when ready, keeping the old
+                // image visible so the frame never collapses/bounces.
+                const loader = new Image();
+                loader.onload = function() {
+                    if (token !== imageToken) return;
+                    modalImg.src = url;
                     modalImg.style.display = 'block';
                     modalPlaceholder.style.display = 'none';
                 };
-                modalImg.onerror = function() {
+                loader.onerror = function() {
+                    if (token !== imageToken) return;
                     modalImg.style.display = 'none';
                     modalPlaceholder.style.display = 'flex';
                     modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>image not found</span>`;
                 };
-                modalImg.src = url;
+                loader.src = url;
             } else {
                 modalImg.style.display = 'none';
                 modalPlaceholder.style.display = 'flex';
                 modalPlaceholder.innerHTML = `<i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>preview</span>`;
             }
+        }
+
+        // ----- Zoom / expand -----
+        function setZoom(on) {
+            gallery.classList.toggle('zoomed', on);
+            if (!on) modalImg.style.transformOrigin = '';
+            zoomBtn.setAttribute('aria-pressed', String(on));
+            zoomBtn.querySelector('.material-icons-round').textContent = on ? 'zoom_out' : 'zoom_in';
+            zoomBtn.title = on ? 'Unzoom' : 'Zoom';
+        }
+
+        function panZoom(e) {
+            if (!gallery.classList.contains('zoomed')) return;
+            const rect = gallery.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            modalImg.style.transformOrigin = x + '% ' + y + '%';
+        }
+
+        function syncExpandBtn() {
+            const on = document.fullscreenElement === gallery;
+            expandBtn.setAttribute('aria-pressed', String(on));
+            expandBtn.querySelector('.material-icons-round').textContent = on ? 'close_fullscreen' : 'open_in_full';
+            expandBtn.title = on ? 'Collapse' : 'Expand';
         }
 
         function nextImage() {
@@ -321,8 +361,9 @@ async function getR2ProjectImages(folder) {
 
         function closeModal() {
             modalRequestId++;
-            modalImg.onload = null;
-            modalImg.onerror = null;
+            imageToken++;
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+            setZoom(false);
             modalImg.removeAttribute('src');
             modalOverlay.classList.remove('active');
             document.body.style.overflow = '';
@@ -355,6 +396,35 @@ async function getR2ProjectImages(folder) {
             nextImage();
         });
         
+        zoomBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (modalImg.style.display === 'none') return;
+            setZoom(!gallery.classList.contains('zoomed'));
+        });
+
+        if (gallery.requestFullscreen) {
+            expandBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (document.fullscreenElement === gallery) {
+                    document.exitFullscreen().catch(() => {});
+                } else {
+                    gallery.requestFullscreen().catch(() => {});
+                }
+            });
+            document.addEventListener('fullscreenchange', syncExpandBtn);
+        } else {
+            expandBtn.style.display = 'none';
+        }
+
+        galleryPrev.addEventListener('click', function(e) { e.stopPropagation(); prevImage(); });
+        galleryNext.addEventListener('click', function(e) { e.stopPropagation(); nextImage(); });
+        gallery.addEventListener('mousemove', panZoom);
+        modalImg.addEventListener('click', function(e) {
+            e.stopPropagation();
+            panZoom(e);
+            setZoom(!gallery.classList.contains('zoomed'));
+        });
+
         closeBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             closeModal();

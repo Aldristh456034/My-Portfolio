@@ -490,18 +490,34 @@ header {
     background: #0d141e;
     flex-shrink: 0;
     clear: both;
+    /* Fixed frame so changing images never resizes the modal (no bounce). */
+    aspect-ratio: 16/9;
+    max-height: 380px;
+    width: 100%;
 }
 .modal-gallery img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
-    max-height: 380px;
+    height: 100%;
     object-fit: contain;
     display: block;
     background: #0b111a;
+    transform-origin: 50% 50%;
+    transition: transform 0.25s ease;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.modal-gallery.zoomed img {
+    transform: scale(2);
+    cursor: zoom-out;
+}
+.modal-gallery.zoomed.panning img {
+    transition: none;
 }
 .modal-gallery .placeholder-img {
-    width: 100%;
-    aspect-ratio: 16/9;
+    position: absolute;
+    inset: 0;
     background: radial-gradient(circle at 30% 40%, #1f3147, #0b121d);
     display: flex;
     align-items: center;
@@ -510,6 +526,61 @@ header {
     font-size: 1rem;
     font-weight: 500;
     gap: 12px;
+}
+.gallery-tools {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 5;
+}
+.gallery-btn,
+.gallery-arrow {
+    background: rgba(20, 27, 36, 0.45);
+    border: 1px solid rgba(198, 220, 255, 0.25);
+    color: #e3eeff;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: opacity 0.2s, background 0.2s, border-color 0.2s;
+}
+.gallery-btn:hover,
+.gallery-btn:focus-visible,
+.gallery-btn[aria-pressed="true"],
+.gallery-arrow:hover,
+.gallery-arrow:focus-visible {
+    opacity: 1;
+    background: rgba(77, 126, 217, 0.85);
+    border-color: #9dbcf5;
+}
+.gallery-arrow {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+}
+.gallery-arrow.prev { left: 16px; }
+.gallery-arrow.next { right: 16px; }
+.modal-gallery:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-height: none;
+    aspect-ratio: auto;
+    border-radius: 0;
+    margin: 0;
+}
+.modal-gallery:fullscreen .gallery-arrow {
+    display: flex;
 }
 .modal-nav {
     display: flex;

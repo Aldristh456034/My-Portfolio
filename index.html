@@ -450,7 +450,13 @@ Design Features:
                     <div class="placeholder-img" id="modalImagePlaceholder">
                         <i class="material-icons-round" style="font-size:2.4rem;">image</i> <span>preview</span>
                     </div>
-                    <img id="modalImage" style="display:none; width:100%; height:auto; max-height:380px; object-fit:contain;" alt="project preview" />
+                    <img id="modalImage" style="display:none;" alt="project preview" />
+                    <div class="gallery-tools">
+                        <button type="button" class="gallery-btn" id="galleryZoom" aria-pressed="false" aria-label="Zoom image" title="Zoom"><span class="material-icons-round">zoom_in</span></button>
+                        <button type="button" class="gallery-btn" id="galleryExpand" aria-pressed="false" aria-label="Expand view" title="Expand"><span class="material-icons-round">open_in_full</span></button>
+                    </div>
+                    <button type="button" class="gallery-arrow prev" id="galleryPrev" aria-label="Previous image"><span class="material-icons-round">chevron_left</span></button>
+                    <button type="button" class="gallery-arrow next" id="galleryNext" aria-label="Next image"><span class="material-icons-round">chevron_right</span></button>
                 </div>
                 <div class="modal-nav">
                     <button id="modalPrev"><span class="material-icons-round">chevron_left</span> Prev</button>
