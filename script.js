@@ -226,7 +226,6 @@ async function getR2ProjectImages(folder) {
 
         const VIEW_MIN = 1;
         const VIEW_MAX = 5;
-        const VIEW_CLICK_ZOOM = 2.5;
         let viewScale = 1;
         let viewX = 0;
         let viewY = 0;
@@ -558,7 +557,7 @@ async function getR2ProjectImages(folder) {
             setScale(viewScale * (e.deltaY < 0 ? 1.2 : 1 / 1.2), p.x, p.y);
         }, { passive: false });
 
-        // Drag to pan when zoomed; a click without movement toggles zoom.
+        // Drag to pan when zoomed. Zooming is done with the mouse wheel only.
         let drag = null;
         viewerStage.addEventListener('pointerdown', function(e) {
             if (e.button !== 0) return;
@@ -582,14 +581,8 @@ async function getR2ProjectImages(folder) {
         });
         function endDrag(e) {
             if (!drag) return;
-            const wasClick = !drag.moved && e.type === 'pointerup';
             drag = null;
             viewerStage.classList.remove('dragging');
-            if (wasClick) {
-                const p = stagePoint(e);
-                if (viewScale > 1) setScale(1, p.x, p.y);
-                else setScale(VIEW_CLICK_ZOOM, p.x, p.y);
-            }
         }
         viewerStage.addEventListener('pointerup', endDrag);
         viewerStage.addEventListener('pointercancel', endDrag);

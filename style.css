@@ -599,7 +599,7 @@ header {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    cursor: zoom-in;
+    cursor: default;
     touch-action: none;
 }
 .viewer-stage.zoomed {
