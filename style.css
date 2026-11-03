@@ -4,6 +4,14 @@
     padding: 0;
     box-sizing: border-box;
 }
+:root {
+    --text: #e8edf2;
+    --accent: #7aa9ff;
+    --muted: #9aaec9;
+    --line: rgba(122, 169, 255, 0.35);
+    --font-display: 'Instrument Serif', 'Times New Roman', serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
 body {
     background: #0b0d10;
     font-family: 'Inter', sans-serif;
@@ -58,12 +66,18 @@ body {
 
 /* ----- HEADER ----- */
 header {
-    padding: 24px 0 16px;
+    padding: 24px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    gap: 16px;
+}
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
 }
 .logo {
     display: flex;
@@ -88,21 +102,32 @@ header {
 }
 .nav-links {
     display: flex;
-    gap: 28px;
-    font-weight: 500;
-    font-size: 0.95rem;
-    color: #9aaec9;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 50px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
 }
 .nav-links a {
-    color: inherit;
+    color: var(--muted);
     text-decoration: none;
-    transition: color 0.2s;
-    border-bottom: 2px solid transparent;
-    padding-bottom: 4px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    transition: color 0.2s, background 0.2s;
 }
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links a:focus-visible {
     color: #d6e5ff;
-    border-bottom-color: #4d8eff;
+    background: rgba(77, 142, 255, 0.12);
+    outline: none;
+}
+.nav-links a:focus-visible {
+    box-shadow: 0 0 0 1px #4d8eff;
 }
 
 /* ----- PROFILE (centered) ----- */
@@ -145,10 +170,19 @@ header {
     opacity: 0.9;
 }
 .profile-text h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3.6rem, 9vw, 7.5rem);
+    line-height: 0.95;
     letter-spacing: -0.02em;
-    margin-bottom: 4px;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+.profile-text h1 em {
+    display: block;
+    font-style: italic;
+    color: var(--accent);
+    letter-spacing: -0.01em;
 }
 .profile-text .badge {
     background: #1f3144;
@@ -171,10 +205,12 @@ header {
 
 /* ----- SECTION TITLE ----- */
 .section-title {
-    font-size: 2rem;
-    font-weight: 600;
-    margin: 56px 0 28px;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-size: clamp(2.8rem, 6vw, 4.6rem);
+    font-weight: 400;
+    line-height: 1;
+    margin: 72px 0 28px;
+    letter-spacing: -0.015em;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -184,10 +220,13 @@ header {
     color: #6d8fc9;
 }
 .sub-section-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 40px 0 20px;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.1;
+    margin: 48px 0 22px;
+    letter-spacing: -0.005em;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -392,8 +431,9 @@ header {
     .project-grid {
         grid-template-columns: 1fr;
     }
-    .profile-text h1 { font-size: 2.2rem; }
-    .nav-links { gap: 14px; font-size: 0.85rem; flex-wrap: wrap; }
+    .nav-links { gap: 0; padding: 0 6px; height: 44px; font-size: 0.6rem; letter-spacing: 0.16em; }
+    .nav-links a { padding: 8px 11px; }
+    .profile-text h1 { font-size: clamp(3rem, 15vw, 4rem); }
 }
 
 /* ----- MODAL ----- */

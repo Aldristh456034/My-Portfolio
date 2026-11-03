@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aldrich Trinidad · Portfolio</title>
     <!-- Google Font & Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css" />
@@ -16,14 +18,14 @@
 
         <!-- HEADER -->
         <header>
-            <a href="#" class="logo" aria-label="Aldrich Trinidad home">
-                <span>AT</span>
+            <a href="#" class="brand" aria-label="Aldrich Trinidad home">
+                <span class="logo"><span>AT</span></span>
             </a>
-            <div class="nav-links">
+            <nav class="nav-links" aria-label="Main">
                 <a href="#about">About</a>
                 <a href="#projects">Projects</a>
                 <a href="#contact">Contact</a>
-            </div>
+            </nav>
         </header>
 
         <!-- PROFILE -->
@@ -32,7 +34,7 @@
                 <img data-src="ProfileImg/preview1.png" alt="Aldrich Trinidad" />
             </div>
             <div class="profile-text">
-                <h1>Aldrich Trinidad</h1>
+                <h1>Aldrich <em>Trinidad.</em></h1>
                 <div class="badge">✦ IT · Software Developer</div>
                 <p>Software Developer. I build immersive digital experiences with a passion for clean code and elegant design.</p>
             </div>
@@ -460,7 +462,7 @@ Design Features:
         </div>
 
         <div class="footer-note">
-            ✦ built with <span style="color:#7ba3f0;">Nexus</span> · dark material · 2026
+            ✦ dark material · 2026
         </div>
     </div>
 
